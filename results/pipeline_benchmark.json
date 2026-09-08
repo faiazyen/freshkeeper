@@ -1,0 +1,44 @@
+{
+  "host": {
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "machine": "arm64",
+    "tensorflow": "2.21.0"
+  },
+  "runs": 60,
+  "stages_ms": {
+    "decode_resize": {
+      "mean": 0.9158554409320155,
+      "median": 0.8727291133254766,
+      "p95": 1.0542243951931596,
+      "share_of_total": 0.020650207669312196
+    },
+    "preprocess": {
+      "mean": 0.13680633467932543,
+      "median": 0.1360834576189518,
+      "p95": 0.16442367341369388,
+      "share_of_total": 0.0030846344251998655
+    },
+    "backbone": {
+      "mean": 40.83140134656181,
+      "median": 40.800208458676934,
+      "p95": 41.23469656333327,
+      "share_of_total": 0.9206441099235928
+    },
+    "fusion_head": {
+      "mean": 2.4667799239978194,
+      "median": 2.4614580906927586,
+      "p95": 2.512001618742943,
+      "share_of_total": 0.05561960482890923
+    },
+    "total": {
+      "mean": 44.35090705131491,
+      "median": 44.31427177041769,
+      "p95": 44.89638926461339,
+      "share_of_total": 1.0
+    }
+  },
+  "pi4_slowdown_factor": 7.5,
+  "note": "Measured on the development host. The projected Raspberry Pi 4 figure is the host measurement multiplied by an assumed single-core slowdown factor; it is an estimate, not a measurement on hardware.",
+  "projected_pi4_total_ms": 332.6318028848618,
+  "cycle_budget_utilisation": 0.0011087726762828729
+}

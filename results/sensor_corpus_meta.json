@@ -1,0 +1,65 @@
+{
+  "seed": 20260908,
+  "measurement_interval_hours": 0.5,
+  "marginal_threshold": 0.35,
+  "spoiled_threshold": 0.7,
+  "visual_thresholds": {
+    "strawberry": 0.5,
+    "banana": 0.52,
+    "grape": 0.54,
+    "guava": 0.56,
+    "jujube": 0.58,
+    "orange": 0.6,
+    "apple": 0.62,
+    "pomegranate": 0.64
+  },
+  "fridge_population": [
+    {
+      "setpoint_c": 2.5,
+      "openings_per_day": 6.0,
+      "weight": 0.2
+    },
+    {
+      "setpoint_c": 4.0,
+      "openings_per_day": 10.0,
+      "weight": 0.4
+    },
+    {
+      "setpoint_c": 5.5,
+      "openings_per_day": 16.0,
+      "weight": 0.25
+    },
+    {
+      "setpoint_c": 7.5,
+      "openings_per_day": 24.0,
+      "weight": 0.15
+    }
+  ],
+  "splits": {
+    "train": {
+      "n": 8643,
+      "class_counts": {
+        "fresh": 2969,
+        "marginal": 3173,
+        "spoiled": 2501
+      }
+    },
+    "val": {
+      "n": 1855,
+      "class_counts": {
+        "fresh": 654,
+        "marginal": 638,
+        "spoiled": 563
+      }
+    },
+    "test": {
+      "n": 1837,
+      "class_counts": {
+        "fresh": 634,
+        "marginal": 669,
+        "spoiled": 534
+      }
+    }
+  },
+  "provenance": "Images and fresh/rotten labels are real (Project-AgML/fresh_rotten_fruit_classification, CC-BY-4.0). All numeric sensor features are simulated from the physical model in freshkeeper.hardware.spoilage_model and have not been validated against instrumented hardware."
+}

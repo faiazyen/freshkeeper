@@ -1,0 +1,9 @@
+# Installed on the Raspberry Pi in addition to requirements.txt.
+# On the device, prefer tflite-runtime over full TensorFlow: it is a fraction
+# of the size and all the device does is inference.
+RPi.GPIO>=0.7.1
+spidev>=3.6
+adafruit-circuitpython-dht>=4.0.0
+adafruit-blinka>=8.0.0
+picamera2>=0.3.12
+tflite-runtime>=2.14.0

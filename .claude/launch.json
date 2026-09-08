@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "freshkeeper",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["scripts/run_server.py", "--db", "data/demo.db", "--port", "5055"],
+      "port": 5055
+    }
+  ]
+}

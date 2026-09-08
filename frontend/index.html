@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreshKeeper</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  [v-cloak] { display: none; }
+  body { -webkit-font-smoothing: antialiased; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<div id="app" v-cloak class="max-w-3xl mx-auto pb-24">
+
+  <header class="sticky top-0 z-10 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
+    <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white grid place-items-center font-bold">FK</div>
+    <div class="flex-1">
+      <h1 class="font-semibold leading-tight">FreshKeeper</h1>
+      <p class="text-xs text-slate-500">{{ items.length }} items tracked &middot; shelf 1</p>
+    </div>
+    <button @click="refresh" :disabled="loading"
+            class="text-sm px-3 py-1.5 rounded-md border border-slate-300 hover:bg-slate-50 disabled:opacity-50">
+      {{ loading ? 'Reading…' : 'Refresh' }}
+    </button>
+  </header>
+
+  <!-- Alerts -->
+  <section v-if="alerts.length" class="px-4 pt-4 space-y-2">
+    <div v-for="a in alerts" :key="a.item_id + a.type"
+         :class="['rounded-lg px-4 py-3 flex items-start gap-3 border',
+                  a.type === 'spoilage_detected'
+                    ? 'bg-rose-50 border-rose-200'
+                    : a.type === 'use_soon'
+                      ? 'bg-amber-50 border-amber-200'
+                      : 'bg-slate-50 border-slate-200']">
+      <span class="text-lg leading-none mt-0.5" aria-hidden="true">
+        {{ a.type === 'spoilage_detected' ? '⚠' : a.type === 'use_soon' ? '◑' : '◷' }}
+      </span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium">{{ a.message }}</p>
+        <p class="text-xs text-slate-500 mt-0.5">Freshness {{ score(a.freshness_score) }}/100</p>
+      </div>
+      <button @click="snooze(a.item_id)" class="text-xs text-slate-500 hover:text-slate-800 underline">
+        Snooze
+      </button>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section v-if="view === 'dashboard'" class="p-4 grid gap-3 sm:grid-cols-2">
+    <article v-for="item in items" :key="item.id"
+             @click="open(item)"
+             class="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-slate-300 transition">
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <h2 class="font-medium truncate">{{ item.name }}</h2>
+          <p class="text-xs text-slate-500 capitalize">{{ item.commodity }} &middot; slot {{ item.slot_id + 1 }}</p>
+        </div>
+        <span :class="['text-xs px-2 py-0.5 rounded-full border font-medium shrink-0',
+                       badgeClass(item.state)]">
+          {{ stateLabel(item.state) }}
+        </span>
+      </div>
+
+      <!-- Freshness bar. Colour is backed up by a text label and a pattern so
+           it still reads for deuteranopic and protanopic users. -->
+      <div class="mt-3">
+        <div class="flex justify-between text-xs text-slate-500 mb-1">
+          <span>Freshness</span>
+          <span class="tabular-nums">{{ score(item.freshness_score) }}/100</span>
+        </div>
+        <div class="h-2 rounded-full bg-slate-200 overflow-hidden">
+          <div :class="['h-full rounded-full transition-all', barClass(item.state)]"
+               :style="{ width: (item.freshness_score ?? 0) + '%' }"></div>
+        </div>
+      </div>
+
+      <dl class="mt-3 grid grid-cols-3 gap-2 text-xs">
+        <div><dt class="text-slate-500">Days left</dt>
+             <dd class="font-medium tabular-nums">{{ item.days_remaining ?? '—' }}</dd></div>
+        <div><dt class="text-slate-500">Mass</dt>
+             <dd class="font-medium tabular-nums">{{ Math.round(item.initial_mass_g) }} g</dd></div>
+        <div><dt class="text-slate-500">Age</dt>
+             <dd class="font-medium tabular-nums">{{ ageDays(item.added_at) }} d</dd></div>
+      </dl>
+    </article>
+
+    <p v-if="!items.length && !loading" class="text-sm text-slate-500 col-span-full text-center py-12">
+      No items tracked yet.
+    </p>
+  </section>
+
+  <!-- Item detail -->
+  <section v-else-if="view === 'detail' && selected" class="p-4">
+    <button @click="view = 'dashboard'" class="text-sm text-slate-500 hover:text-slate-800 mb-3">
+      ← Back
+    </button>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <h2 class="text-lg font-semibold">{{ selected.name }}</h2>
+          <p class="text-sm text-slate-500 capitalize">
+            {{ selected.commodity }} &middot; slot {{ selected.slot_id + 1 }}
+          </p>
+        </div>
+        <span :class="['text-xs px-2 py-1 rounded-full border font-medium', badgeClass(selected.state)]">
+          {{ stateLabel(selected.state) }}
+        </span>
+      </div>
+
+      <div v-if="selected.probabilities" class="mt-4 grid grid-cols-3 gap-3 text-center">
+        <div v-for="(p, k) in selected.probabilities" :key="k" class="bg-slate-50 rounded-lg py-2">
+          <p class="text-xs text-slate-500 capitalize">{{ k }}</p>
+          <p class="font-semibold tabular-nums">{{ (p * 100).toFixed(1) }}%</p>
+        </div>
+      </div>
+
+      <h3 class="text-sm font-medium mt-5 mb-2">Freshness over time</h3>
+      <canvas ref="chart" height="160"></canvas>
+
+      <div class="mt-5 flex flex-wrap gap-2">
+        <button @click="consume(selected.id, 'eaten')"
+                class="px-3 py-2 text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700">
+          Mark eaten
+        </button>
+        <button @click="consume(selected.id, 'binned')"
+                class="px-3 py-2 text-sm rounded-md bg-rose-600 text-white hover:bg-rose-700">
+          Mark thrown away
+        </button>
+        <button @click="snooze(selected.id)"
+                class="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-50">
+          Snooze 24 h
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section v-else-if="view === 'stats'" class="p-4">
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <h2 class="font-semibold mb-3">Waste tracking</h2>
+      <dl class="grid grid-cols-2 gap-4">
+        <div v-for="(v, k) in statLabels" :key="k">
+          <dt class="text-xs text-slate-500">{{ v }}</dt>
+          <dd class="text-xl font-semibold tabular-nums">{{ formatStat(k) }}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Bottom nav -->
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200">
+    <div class="max-w-3xl mx-auto grid grid-cols-2">
+      <button v-for="tab in [['dashboard','Shelf'],['stats','Stats']]" :key="tab[0]"
+              @click="view = tab[0]"
+              :class="['py-3 text-sm font-medium',
+                       view === tab[0] ? 'text-emerald-700 border-t-2 border-emerald-600 -mt-px'
+                                       : 'text-slate-500']">
+        {{ tab[1] }}
+      </button>
+    </div>
+  </nav>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

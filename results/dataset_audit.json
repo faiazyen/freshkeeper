@@ -1,0 +1,32 @@
+{
+  "corpus_size": 12335,
+  "similarity_threshold": 0.95,
+  "linking_pairs": 2911,
+  "n_groups": 9817,
+  "largest_group": 10,
+  "group_size_distribution": {
+    "1": 7909,
+    "2": 1478,
+    "3": 316,
+    "4": 78,
+    "5": 18,
+    "6": 12,
+    "7": 3,
+    "8": 1,
+    "9": 1,
+    "10": 1
+  },
+  "split_counts": {
+    "val": 1855,
+    "train": 8643,
+    "test": 1837
+  },
+  "residual_test_leakage_fraction": 0.0,
+  "nearest_neighbour_percentiles": {
+    "p50": 0.8944523930549622,
+    "p90": 0.9354576110839844,
+    "p95": 0.9429144144058228,
+    "p99": 0.9483362674713135,
+    "p100": 0.9498721361160278
+  }
+}

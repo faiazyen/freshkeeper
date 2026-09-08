@@ -1,0 +1,18 @@
+APScheduler==3.11.3
+Flask==3.1.3
+PyYAML==6.0.3
+SQLAlchemy==2.0.52
+flask-cors==6.0.5
+matplotlib==3.11.1
+numpy==2.5.3
+pandas==3.0.5
+pillow==12.3.0
+playwright==1.62.0
+pyarrow==25.0.1
+pytest-cov==7.1.0
+pytest==9.1.1
+scikit-learn==1.9.0
+tensorflow==2.21.0
+
+# Raspberry Pi only. These have no wheels for macOS or generic Linux, so they
+# are installed on the device with: pip install -r requirements-pi.txt
