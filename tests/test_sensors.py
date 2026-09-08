@@ -114,3 +114,32 @@ class TestSimulatedBackend:
         # The simulator models the sensor array, never the imagery.
         backend = SimulatedSensorBackend(slot_count=1, seed=1)
         assert backend.capture_image(0) is None
+
+
+class TestCrossProcessReproducibility:
+    def test_readings_do_not_depend_on_pythonhashseed(self):
+        """The seed must be the only source of randomness.
+
+        An earlier version derived per-item seeds from hash() of a string,
+        which Python salts per interpreter process. Same seed, different
+        process, different readings -- while the thesis claimed exact
+        reproducibility. Run the simulation in two subprocesses with different
+        hash seeds and require identical output.
+        """
+        import os, subprocess, sys
+        code = (
+            "import sys; sys.path.insert(0, %r)\n"
+            "from freshkeeper.hardware.sim_backend import SimulatedSensorBackend\n"
+            "b = SimulatedSensorBackend(slot_count=2, time_acceleration=24.0, seed=42)\n"
+            "b.place_item(0, 'strawberry'); b.place_item(1, 'apple')\n"
+            "for _ in range(5): s = b.read_all()\n"
+            "print(s[0].ethanol_ppm, s[1].mass_g, s[0].temperature_c)\n"
+        ) % os.getcwd()
+        outputs = []
+        for seed in ("1", "2"):
+            env = dict(os.environ, PYTHONHASHSEED=seed)
+            outputs.append(subprocess.run(
+                [sys.executable, "-c", code], env=env, capture_output=True,
+                text=True, check=True).stdout.strip())
+        assert outputs[0] == outputs[1], (
+            f"readings differ across processes: {outputs}")

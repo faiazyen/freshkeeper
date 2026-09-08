@@ -40,11 +40,12 @@ RESULTS = ROOT / "results"
 RUNS = 60
 WARMUP = 10
 
-#: Single-core integer throughput ratio, Apple M-series performance core to
-#: Raspberry Pi 4 Cortex-A72 at 1.5 GHz. Used only to state an expected Pi
-#: figure alongside the measured host figure; it is an estimate, not a
-#: measurement, and the thesis labels it as such.
-PI4_SLOWDOWN_FACTOR = 7.5
+#: Single-core ratio between the development host and a Raspberry Pi 4, from
+#: Geekbench 6 single-core medians: Apple M1 about 2,334 against Raspberry Pi 4
+#: about 293 (browser.geekbench.com/v6/cpu, retrieved September 2026), which
+#: is 8.0x. Used only to state an expected Pi figure alongside the measured
+#: host figure; it is an estimate, not a measurement, and the thesis says so.
+PI4_SLOWDOWN_FACTOR = 8.0
 
 
 def main() -> int:

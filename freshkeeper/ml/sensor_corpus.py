@@ -93,6 +93,10 @@ FRIDGE_POPULATION = [
 
 MEASUREMENT_INTERVAL_HOURS = 0.5
 
+#: Fixed per-split seed offsets. An earlier version used hash(split), which
+#: Python salts per process, so the corpus silently differed on every run.
+SPLIT_OFFSET = {"train": 1, "val": 2, "test": 3}
+
 
 def sample_fridge(rng: random.Random) -> FridgeThermalModel:
     weights = [w for *_, w in FRIDGE_POPULATION]
@@ -224,7 +228,7 @@ def main() -> int:
         subset_idx = [i for i, r in enumerate(rows) if r["split"] == split]
         subset = [rows[i] for i in subset_idx]
         # Seed per split so regenerating one split does not disturb the others.
-        rng = random.Random(SEED + hash(split) % 10_000)
+        rng = random.Random(SEED + SPLIT_OFFSET[split])
         feats, targets, local_img = build(subset, rng)
         embeddings = corpus[[subset_idx[i] for i in local_img]]
 

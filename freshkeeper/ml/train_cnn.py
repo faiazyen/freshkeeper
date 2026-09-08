@@ -21,6 +21,7 @@ Run:  python -m freshkeeper.ml.train_cnn
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import sys
@@ -48,9 +49,9 @@ BATCH_SIZE = 32
 SEED = 20260908
 
 
-def load_split(split: str):
-    x = np.load(EMB_DIR / f"{split}_x.npy")
-    y = np.load(EMB_DIR / f"{split}_y.npy")
+def load_split(split: str, emb_dir: Path = EMB_DIR):
+    x = np.load(emb_dir / f"{split}_x.npy")
+    y = np.load(emb_dir / f"{split}_y.npy")
     return x, y
 
 
@@ -88,6 +89,20 @@ def image_dataset(split: str, shuffle: bool, augment: bool) -> tf.data.Dataset:
 
 
 def main() -> int:
+    global MANIFEST
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--manifest", default=None,
+                        help="split manifest to train on (default: grouped if present)")
+    parser.add_argument("--tag", default="",
+                        help="suffix for the saved model and history, e.g. naive_split")
+    parser.add_argument("--embedding-dir", default=None,
+                        help="directory holding {train,val,test}_x.npy for stage 1")
+    args = parser.parse_args()
+    if args.manifest:
+        MANIFEST = Path(args.manifest).resolve()
+    emb_dir = Path(args.embedding_dir) if args.embedding_dir else EMB_DIR
+    suffix = f"_{args.tag}" if args.tag else ""
+
     MODEL_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.mkdir(exist_ok=True)
     keras.utils.set_random_seed(SEED)
@@ -96,8 +111,8 @@ def main() -> int:
 
     # ---- Stage 1: head over cached embeddings --------------------------
     print("Stage 1: training classifier head on frozen-backbone embeddings")
-    xtr, ytr = load_split("train")
-    xva, yva = load_split("val")
+    xtr, ytr = load_split("train", emb_dir)
+    xva, yva = load_split("val", emb_dir)
 
     head = compile_binary(build_visual_head(), learning_rate=1e-3)
     t0 = time.time()
@@ -168,19 +183,23 @@ def main() -> int:
     history_log["stage2"] = {k: [float(v) for v in vals] for k, vals in h2.history.items()}
     print(f"  {len(h2.history['loss'])} epochs in {stage2_time/60:.1f} min")
 
-    model.save(MODEL_DIR / "visual_cnn.keras")
-    with (RESULTS_DIR / "cnn_training_history.json").open("w") as fh:
-        json.dump({
+    model.save(MODEL_DIR / f"visual_cnn{suffix}.keras")
+    # Serialise fully before opening the file: an exception raised mid-dump
+    # (a relative manifest path once did it) otherwise leaves a truncated,
+    # unreadable result file behind.
+    payload = json.dumps({
             "history": history_log,
             "stage1_seconds": stage1_time,
             "stage2_seconds": stage2_time,
+            "manifest": str(MANIFEST.resolve().relative_to(ROOT.resolve())),
             "config": {
                 "stage1_epochs": STAGE1_EPOCHS, "stage2_epochs": STAGE2_EPOCHS,
                 "unfrozen_layers": STAGE2_UNFREEZE_LAYERS,
                 "batch_size": BATCH_SIZE, "seed": SEED,
             },
-        }, fh, indent=2)
-    print(f"\nSaved {MODEL_DIR / 'visual_cnn.keras'}")
+        }, indent=2)
+    (RESULTS_DIR / f"cnn_training_history{suffix}.json").write_text(payload)
+    print(f"\nSaved {MODEL_DIR / f'visual_cnn{suffix}.keras'}")
     return 0
 
 

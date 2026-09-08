@@ -23,6 +23,7 @@ createApp({
     const view = ref('dashboard');
     const selected = ref(null);
     const loading = ref(false);
+    const cameraEnabled = ref(true);
     const chart = ref(null);
     let chartInstance = null;
 
@@ -44,9 +45,11 @@ createApp({
     async function refresh() {
       loading.value = true;
       try {
-        [items.value, alerts.value, stats.value] = await Promise.all([
-          api('/items'), api('/alerts'), api('/stats')
+        let settings;
+        [items.value, alerts.value, stats.value, settings] = await Promise.all([
+          api('/items'), api('/alerts'), api('/stats'), api('/settings')
         ]);
+        cameraEnabled.value = settings.camera_enabled;
       } catch (err) {
         console.error('refresh failed', err);
       } finally {
@@ -85,6 +88,13 @@ createApp({
           }
         }
       });
+    }
+
+    async function toggleCamera() {
+      const res = await api('/settings', {
+        method: 'POST', body: JSON.stringify({ camera_enabled: !cameraEnabled.value })
+      });
+      cameraEnabled.value = res.camera_enabled;
     }
 
     async function snooze(id) {
@@ -134,6 +144,6 @@ createApp({
 
     return { items, alerts, stats, view, selected, loading, chart, statLabels,
              refresh, open, snooze, consume, stateLabel, badgeClass, barClass,
-             ageDays, formatStat, score };
+             ageDays, formatStat, score, cameraEnabled, toggleCamera };
   }
 }).mount('#app');

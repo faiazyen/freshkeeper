@@ -1,4 +1,18 @@
 {
+  "naive_split": {
+    "test_leakage_fraction": 0.2717041800643087,
+    "nearest_neighbour_percentiles": {
+      "p50": 0.9133327901363373,
+      "p90": 0.9787135720252991,
+      "p95": 0.9866278916597366,
+      "p99": 0.9939178019762039,
+      "p100": 0.9981911778450012
+    }
+  },
+  "label_anomaly_centroid_cosine": {
+    "fresh_apple_vs_rotten_apple": 0.8621866106987,
+    "fresh_apple_vs_fresh_orange": 0.8502537608146667
+  },
   "corpus_size": 12335,
   "similarity_threshold": 0.95,
   "linking_pairs": 2911,

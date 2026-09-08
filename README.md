@@ -17,10 +17,10 @@ This matters more than anything else in this README, so it goes first.
 |---|---|
 | Image corpus and fresh/rotten labels | **Real.** 12,335 photographs, CC-BY-4.0 |
 | Visual CNN training and evaluation | **Real.** Measured on a held-out, leakage-controlled split |
-| Software stack: API, database, alerts, interface | **Real.** Runs, tested, 119 tests |
+| Software stack: API, database, alerts, interface | **Real.** Runs, tested, 128 tests |
 | Physical spoilage model | **Real model, calibrated** against published shelf lives |
 | Gas / temperature / humidity / mass readings | **Simulated** from that model |
-| Raspberry Pi driver code | **Written, not validated** against instruments |
+| Raspberry Pi driver code | **Written, not validated** against instruments (heater gating, ADC divider and camera switch are implemented and unit-tested, never run on a Pi) |
 | Three-state fusion accuracy | Measured **under the simulation**, not on a real shelf |
 
 No public dataset pairs photographs of spoiling food with synchronised sensor
@@ -31,15 +31,19 @@ Validating against instrumented hardware is the first item of future work.
 
 ## Results
 
-Held-out test split, group-aware to prevent near-duplicate leakage.
+Held-out test split, group-aware to prevent near-duplicate leakage. These
+numbers are read from `results/*.json`; the thesis renders the same files, so
+the two cannot disagree. Rerun `make all` and they regenerate exactly — every
+seed is fixed, and a subprocess test guards against the `hash()` salting that
+once made them drift between runs.
 
 | Model | Accuracy | Macro F1 | Recall (spoiled) |
 |---|---|---|---|
-| Visual CNN, binary fresh/rotten | 0.980 | 0.980 | 0.980 |
-| Vision only, three states | 0.618 | 0.546 | 0.957 |
-| Sensor only, three states | **0.969** | **0.969** | **0.983** |
-| Fusion, raw concatenation | 0.943 | 0.944 | 0.953 |
-| Fusion, projected embedding | 0.960 | 0.961 | 0.957 |
+| Visual CNN, binary fresh/rotten | 0.980 | 0.980 | 0.982 |
+| Vision only, three states | 0.614 | 0.516 | 0.985 |
+| Sensor only, three states | **0.963** | **0.964** | **0.963** |
+| Fusion, raw concatenation | 0.942 | 0.942 | 0.916 |
+| Fusion, projected embedding | 0.959 | 0.959 | 0.950 |
 
 Two findings worth stating plainly, because neither is what the design
 predicted:
@@ -103,7 +107,7 @@ freshkeeper/
   alerts.py             freshness score, trend extrapolation, alert rules
 frontend/               Vue 3 single-page interface
 scripts/                dataset prep, audit, diagrams, screenshots, benchmarks
-tests/                  119 tests
+tests/                  128 tests
 docs/figures/           every figure used in the thesis
 results/                machine-readable metrics from each stage
 ```
@@ -126,23 +130,13 @@ are framed.
 
 ## Performance
 
-End-to-end, per item, measured on the development host:
-
-| Stage | Mean | Share |
-|---|---|---|
-| JPEG decode and resize | 0.92 ms | 2.1% |
-| Preprocess | 0.14 ms | 0.3% |
-| MobileNetV2 backbone | 40.83 ms | 92.1% |
-| Fusion head | 2.47 ms | 5.6% |
-| **Total** | **44.35 ms** | |
-
-The backbone is essentially the entire cost. Scaled by an assumed 7.5x
-single-core slowdown, a Raspberry Pi 4 would need roughly 333 ms per item, so
-six slots take about 2 seconds of a thirty-minute cycle — 0.1% duty. That is an
-estimate from a published ratio, not a measurement on a Pi.
-
-TFLite conversion of the fusion head: 0.575 MB float32, 0.292 MB float16,
-0.163 MB int8, with int8 costing 0.4 points of accuracy.
+Per-stage inference cost is in `results/pipeline_benchmark.json` and TFLite
+size/latency/accuracy per quantisation variant in `results/tflite_benchmark.json`;
+Chapter 5 of the thesis renders both. The MobileNetV2 backbone is over 90% of
+per-item cost. The Raspberry Pi 4 figure is the host measurement scaled by the
+Geekbench 6 single-core ratio (M1 ≈ 2,334 vs Pi 4 ≈ 293, i.e. 8.0×) — an
+estimate, not a measurement on a Pi. Run the benchmark on an otherwise idle
+machine; a concurrent training job inflated it 3.5× once.
 
 ## Licence and attribution
 

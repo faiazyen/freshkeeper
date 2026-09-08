@@ -75,7 +75,7 @@ def build(document) -> None:
          "convolutional neural network cost around EUR 55, and the sensors "
          "needed to watch a shelf cost a few euros each. A Raspberry Pi 4 with a "
          "camera, two gas sensors, a load cell and a temperature probe comes to "
-         "roughly EUR 144 in parts, which is inside the range of a domestic "
+         "roughly EUR 147 in parts, which is inside the range of a domestic "
          "appliance accessory rather than laboratory equipment.")
 
     para(document,

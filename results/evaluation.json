@@ -19,179 +19,179 @@
     "note": "Real images, real labels. The fresh/rotten distinction in this corpus is visually stark, so a high score here does not imply the system can detect early spoilage."
   },
   "vision_only": {
-    "accuracy": 0.6183995645073489,
-    "macro_f1": 0.5463294624185938,
-    "spoiled_recall": 0.9569288389513109,
-    "spoiled_precision": 0.6741424802110818,
+    "accuracy": 0.6140446379967338,
+    "macro_f1": 0.5155750142657437,
+    "spoiled_recall": 0.9851024208566108,
+    "spoiled_precision": 0.695137976346912,
     "per_class": {
       "fresh": {
-        "precision": 0.6018808777429467,
-        "recall": 0.9085173501577287,
-        "f1": 0.7240729101194218,
-        "support": 634
+        "precision": 0.5674641148325359,
+        "recall": 0.9657980456026058,
+        "f1": 0.7148884870403858,
+        "support": 614
       },
       "marginal": {
-        "precision": 0.4016393442622951,
-        "recall": 0.07324364723467862,
-        "f1": 0.12389380530973451,
-        "support": 669
+        "precision": 0.1935483870967742,
+        "recall": 0.008746355685131196,
+        "f1": 0.016736401673640166,
+        "support": 686
       },
       "spoiled": {
-        "precision": 0.6741424802110818,
-        "recall": 0.9569288389513109,
-        "f1": 0.7910216718266254,
-        "support": 534
+        "precision": 0.695137976346912,
+        "recall": 0.9851024208566108,
+        "f1": 0.8151001540832049,
+        "support": 537
       }
     },
     "confusion_matrix": [
       [
-        576,
-        53,
-        5
+        593,
+        18,
+        3
       ],
       [
-        378,
-        49,
-        242
+        451,
+        6,
+        229
       ],
       [
-        3,
-        20,
-        511
+        1,
+        7,
+        529
       ]
     ],
-    "report": "              precision    recall  f1-score   support\n\n       fresh     0.6019    0.9085    0.7241       634\n    marginal     0.4016    0.0732    0.1239       669\n     spoiled     0.6741    0.9569    0.7910       534\n\n    accuracy                         0.6184      1837\n   macro avg     0.5592    0.6462    0.5463      1837\nweighted avg     0.5500    0.6184    0.5250      1837\n"
+    "report": "              precision    recall  f1-score   support\n\n       fresh     0.5675    0.9658    0.7149       614\n    marginal     0.1935    0.0087    0.0167       686\n     spoiled     0.6951    0.9851    0.8151       537\n\n    accuracy                         0.6140      1837\n   macro avg     0.4854    0.6532    0.5156      1837\nweighted avg     0.4652    0.6140    0.4835      1837\n"
   },
   "sensor_only": {
-    "accuracy": 0.9689711486118672,
-    "macro_f1": 0.9692685441098542,
-    "spoiled_recall": 0.9831460674157303,
-    "spoiled_precision": 0.963302752293578,
+    "accuracy": 0.9629831246597713,
+    "macro_f1": 0.9635586270193398,
+    "spoiled_recall": 0.962756052141527,
+    "spoiled_precision": 0.9681647940074907,
     "per_class": {
       "fresh": {
-        "precision": 0.9647239263803681,
-        "recall": 0.9921135646687698,
-        "f1": 0.9782270606531882,
-        "support": 634
+        "precision": 0.9709208400646203,
+        "recall": 0.9788273615635179,
+        "f1": 0.9748580697485807,
+        "support": 614
       },
       "marginal": {
-        "precision": 0.978125,
-        "recall": 0.9357249626307922,
-        "f1": 0.9564553093964858,
-        "support": 669
+        "precision": 0.9517543859649122,
+        "recall": 0.9489795918367347,
+        "f1": 0.9503649635036496,
+        "support": 686
       },
       "spoiled": {
-        "precision": 0.963302752293578,
-        "recall": 0.9831460674157303,
-        "f1": 0.9731232622798888,
-        "support": 534
+        "precision": 0.9681647940074907,
+        "recall": 0.962756052141527,
+        "f1": 0.965452847805789,
+        "support": 537
       }
     },
     "confusion_matrix": [
       [
-        629,
-        5,
+        601,
+        13,
         0
       ],
       [
-        23,
-        626,
-        20
+        18,
+        651,
+        17
       ],
       [
         0,
-        9,
-        525
+        20,
+        517
       ]
     ],
-    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9647    0.9921    0.9782       634\n    marginal     0.9781    0.9357    0.9565       669\n     spoiled     0.9633    0.9831    0.9731       534\n\n    accuracy                         0.9690      1837\n   macro avg     0.9687    0.9703    0.9693      1837\nweighted avg     0.9692    0.9690    0.9688      1837\n"
+    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9709    0.9788    0.9749       614\n    marginal     0.9518    0.9490    0.9504       686\n     spoiled     0.9682    0.9628    0.9655       537\n\n    accuracy                         0.9630      1837\n   macro avg     0.9636    0.9635    0.9636      1837\nweighted avg     0.9630    0.9630    0.9630      1837\n"
   },
   "fusion_raw": {
-    "accuracy": 0.9433859553620033,
-    "macro_f1": 0.9436975851297776,
-    "spoiled_recall": 0.9531835205992509,
-    "spoiled_precision": 0.9288321167883211,
+    "accuracy": 0.9417528579205225,
+    "macro_f1": 0.9418680237227712,
+    "spoiled_recall": 0.9162011173184358,
+    "spoiled_precision": 0.9461538461538461,
     "per_class": {
       "fresh": {
-        "precision": 0.9759615384615384,
-        "recall": 0.9605678233438486,
-        "f1": 0.9682034976152624,
-        "support": 634
+        "precision": 0.9588607594936709,
+        "recall": 0.9869706840390879,
+        "f1": 0.9727126805778491,
+        "support": 614
       },
       "marginal": {
-        "precision": 0.924812030075188,
-        "recall": 0.9192825112107623,
-        "f1": 0.9220389805097451,
-        "support": 669
+        "precision": 0.9226277372262773,
+        "recall": 0.9212827988338192,
+        "f1": 0.9219547775346463,
+        "support": 686
       },
       "spoiled": {
-        "precision": 0.9288321167883211,
-        "recall": 0.9531835205992509,
-        "f1": 0.9408502772643254,
-        "support": 534
+        "precision": 0.9461538461538461,
+        "recall": 0.9162011173184358,
+        "f1": 0.9309366130558183,
+        "support": 537
       }
     },
     "confusion_matrix": [
       [
-        609,
-        25,
+        606,
+        8,
         0
       ],
       [
-        15,
-        615,
-        39
+        26,
+        632,
+        28
       ],
       [
         0,
-        25,
-        509
+        45,
+        492
       ]
     ],
-    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9760    0.9606    0.9682       634\n    marginal     0.9248    0.9193    0.9220       669\n     spoiled     0.9288    0.9532    0.9409       534\n\n    accuracy                         0.9434      1837\n   macro avg     0.9432    0.9443    0.9437      1837\nweighted avg     0.9436    0.9434    0.9434      1837\n"
+    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9589    0.9870    0.9727       614\n    marginal     0.9226    0.9213    0.9220       686\n     spoiled     0.9462    0.9162    0.9309       537\n\n    accuracy                         0.9418      1837\n   macro avg     0.9425    0.9415    0.9419      1837\nweighted avg     0.9416    0.9418    0.9415      1837\n"
   },
   "fusion": {
-    "accuracy": 0.9602612955906369,
-    "macro_f1": 0.9604840721526066,
-    "spoiled_recall": 0.9569288389513109,
-    "spoiled_precision": 0.9659735349716446,
+    "accuracy": 0.9586281981491562,
+    "macro_f1": 0.9588446234667964,
+    "spoiled_recall": 0.9497206703910615,
+    "spoiled_precision": 0.9550561797752809,
     "per_class": {
       "fresh": {
-        "precision": 0.9616564417177914,
-        "recall": 0.9889589905362776,
-        "f1": 0.9751166407465007,
-        "support": 634
+        "precision": 0.9727126805778491,
+        "recall": 0.9869706840390879,
+        "f1": 0.9797898140662894,
+        "support": 614
       },
       "marginal": {
-        "precision": 0.9542682926829268,
-        "recall": 0.9357249626307922,
-        "f1": 0.9449056603773585,
-        "support": 669
+        "precision": 0.9485294117647058,
+        "recall": 0.9402332361516035,
+        "f1": 0.9443631039531479,
+        "support": 686
       },
       "spoiled": {
-        "precision": 0.9659735349716446,
-        "recall": 0.9569288389513109,
-        "f1": 0.9614299153339605,
-        "support": 534
+        "precision": 0.9550561797752809,
+        "recall": 0.9497206703910615,
+        "f1": 0.9523809523809523,
+        "support": 537
       }
     },
     "confusion_matrix": [
       [
-        627,
-        7,
+        606,
+        8,
         0
       ],
       [
-        25,
-        626,
-        18
+        17,
+        645,
+        24
       ],
       [
         0,
-        23,
-        511
+        27,
+        510
       ]
     ],
-    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9617    0.9890    0.9751       634\n    marginal     0.9543    0.9357    0.9449       669\n     spoiled     0.9660    0.9569    0.9614       534\n\n    accuracy                         0.9603      1837\n   macro avg     0.9606    0.9605    0.9605      1837\nweighted avg     0.9602    0.9603    0.9601      1837\n"
+    "report": "              precision    recall  f1-score   support\n\n       fresh     0.9727    0.9870    0.9798       614\n    marginal     0.9485    0.9402    0.9444       686\n     spoiled     0.9551    0.9497    0.9524       537\n\n    accuracy                         0.9586      1837\n   macro avg     0.9588    0.9590    0.9588      1837\nweighted avg     0.9585    0.9586    0.9585      1837\n"
   }
 }

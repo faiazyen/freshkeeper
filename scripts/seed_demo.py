@@ -15,6 +15,7 @@ Run:  python scripts/seed_demo.py
 
 from __future__ import annotations
 
+import json
 import sys
 from datetime import timedelta
 from pathlib import Path
@@ -31,7 +32,7 @@ from freshkeeper.ml.inference import InferenceService  # noqa: E402
 
 DB_PATH = ROOT / "data" / "demo.db"
 HOURS_PER_CYCLE = 12.0
-CYCLES = 24
+CYCLES = 23  # a cycle at which an item has just crossed into a new state
 
 SHELF = [
     (0, "Strawberries", "strawberry"),
@@ -72,8 +73,13 @@ def main() -> int:
     print(f"Running {CYCLES} cycles at {HOURS_PER_CYCLE} simulated hours each "
           f"({CYCLES * HOURS_PER_CYCLE / 24:.0f} days)\n")
 
+    log = []
     for cycle in range(1, CYCLES + 1):
         result = service.run_cycle()
+        log.append({"cycle": cycle, "day": round(cycle * HOURS_PER_CYCLE / 24, 2),
+                    "items": [{"name": r["item"], "state": r["state"],
+                               "score": round(float(r["freshness_score"]), 1)}
+                              for r in result["items"]]})
         if cycle % 5 == 0 or cycle == 1:
             day = cycle * HOURS_PER_CYCLE / 24
             summary = "  ".join(
@@ -98,7 +104,14 @@ def main() -> int:
             item.added_at = item.added_at - timedelta(
                 hours=HOURS_PER_CYCLE * CYCLES)
 
-    print(f"\nWrote {DB_PATH}")
+    results_dir = ROOT / "results"
+    results_dir.mkdir(exist_ok=True)
+    (results_dir / "demo_run.json").write_text(json.dumps({
+        "hours_per_cycle": HOURS_PER_CYCLE, "cycles": CYCLES,
+        "shelf": [{"slot": s, "name": n, "commodity": c} for s, n, c in SHELF],
+        "log": log,
+    }, indent=2))
+    print(f"\nWrote {DB_PATH} and {results_dir / 'demo_run.json'}")
     return 0
 
 

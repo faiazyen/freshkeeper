@@ -13,6 +13,8 @@ Endpoints
     GET    /api/readings/<slot_id>      recent sensor readings for a slot
     GET    /api/alerts                  currently active alerts
     GET    /api/stats                   waste-tracking summary
+    GET    /api/settings                current settings
+    POST   /api/settings                change settings (camera_enabled)
     POST   /api/cycle                   run one measurement cycle now
 
 Authentication is a bearer token, generated on first run and printed to the
@@ -331,6 +333,29 @@ def create_app(db_path: str | Path = "data/freshkeeper.db",
                 "mean_alert_lead_time_hours": (
                     round(sum(leads) / len(leads), 2) if leads else None),
             })
+
+    @app.get("/api/settings")
+    @require_token
+    def get_settings():
+        service = app.config["INFERENCE"]
+        enabled = (service.backend.camera_enabled if service is not None
+                   else app.config.get("CAMERA_ENABLED", True))
+        return jsonify({"camera_enabled": bool(enabled)})
+
+    @app.post("/api/settings")
+    @require_token
+    def set_settings():
+        """The privacy switch. Turning the camera off is honoured by the
+        backend itself, so no code path above it can photograph the shelf."""
+        body = request.get_json(silent=True) or {}
+        if "camera_enabled" not in body or not isinstance(body["camera_enabled"], bool):
+            return jsonify({"error": "camera_enabled must be true or false"}), 400
+        enabled = body["camera_enabled"]
+        app.config["CAMERA_ENABLED"] = enabled
+        service = app.config["INFERENCE"]
+        if service is not None:
+            service.backend.camera_enabled = enabled
+        return jsonify({"camera_enabled": enabled})
 
     @app.post("/api/cycle")
     @require_token

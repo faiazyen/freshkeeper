@@ -21,6 +21,7 @@ Pin assignment (BCM numbering), matching the wiring diagram in the appendix:
     GPIO 5    HX711 DOUT
     GPIO 6    HX711 SCK
     GPIO 18   LED strip gate, via 2N7000 N-channel MOSFET
+    GPIO 17   MQ heater supply gate, via IRLZ44N logic-level MOSFET
     SPI0      MCP3008 ADC: CE0=GPIO8, MOSI=GPIO10, MISO=GPIO9, SCLK=GPIO11
       CH0     MQ-135 analogue out (ammonia)
       CH1     MQ-3 analogue out (ethanol)
@@ -40,13 +41,21 @@ PIN_DHT22 = 4
 PIN_HX711_DOUT = 5
 PIN_HX711_SCK = 6
 PIN_LED_GATE = 18
+PIN_HEATER_GATE = 17
 ADC_CHANNEL_MQ135 = 0
 ADC_CHANNEL_MQ3 = 1
 
-#: Seconds the MQ heaters need before their output is stable. The datasheet
-#: asks for a much longer burn-in on first power-up; 30 s is the settling time
-#: between duty cycles once the sensor has been running.
+#: Seconds the MQ heaters need before their output is stable after being
+#: switched on. The datasheet asks for a much longer burn-in on first ever
+#: power-up; 30 s is the settling time between duty cycles once the sensor has
+#: been conditioned. Heaters are gated so they draw power only while a cycle
+#: is measuring, which is where most of the power budget in the thesis goes.
 GAS_WARMUP_SECONDS = 30.0
+
+#: The MQ modules output up to their 5 V supply, but the MCP3008 must not see
+#: more than 3.3 V, so a resistive divider sits between them. This is the
+#: fraction of the true sensor voltage that reaches the converter.
+GAS_DIVIDER_RATIO = 3.3 / 5.0
 
 #: Samples averaged per gas reading, and the gap between them.
 GAS_SAMPLE_COUNT = 25
@@ -90,12 +99,14 @@ class RaspberryPiSensorBackend(SensorBackend):
         load_cell_scale: float = 428.0,
         load_cell_offset: int = 0,
         image_dir: str | Path = "data/captures",
+        gas_divider_ratio: float = GAS_DIVIDER_RATIO,
     ) -> None:
         self.slot_count = slot_count
         self.r0_mq135 = r0_mq135
         self.r0_mq3 = r0_mq3
         self.load_cell_scale = load_cell_scale
         self.load_cell_offset = load_cell_offset
+        self.gas_divider_ratio = gas_divider_ratio
         self.image_dir = Path(image_dir)
         self.image_dir.mkdir(parents=True, exist_ok=True)
         self._roi: dict[int, tuple[int, int, int, int]] = {}
@@ -120,6 +131,7 @@ class RaspberryPiSensorBackend(SensorBackend):
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(PIN_LED_GATE, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(PIN_HEATER_GATE, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(PIN_HX711_DOUT, GPIO.IN)
         GPIO.setup(PIN_HX711_SCK, GPIO.OUT, initial=GPIO.LOW)
 
@@ -149,16 +161,26 @@ class RaspberryPiSensorBackend(SensorBackend):
         raw = self._spi.xfer2([1, (8 + channel) << 4, 0])
         return ((raw[1] & 3) << 8) + raw[2]
 
-    def _adc_to_resistance(self, code: int, load_resistance: float = 10_000.0) -> float:
+    def _adc_to_resistance(self, code: int, load_resistance: float = 10_000.0,
+                           divider_ratio: float | None = None) -> float:
         """Convert an ADC code to the sensor's resistance Rs, in ohms.
 
         The MQ module puts its sensing element in series with a load resistor.
         With Vcc across the pair and Vout measured across the load,
         Rs = RL * (Vcc - Vout) / Vout.
+
+        The converter reads the divided-down voltage, so it is scaled back up
+        by ``divider_ratio`` before the formula is applied. An earlier version
+        skipped that step and would have reported every resistance too high by
+        the divider ratio -- undetectable without hardware, which is exactly why
+        it is spelled out.
         """
+        ratio = (getattr(self, "gas_divider_ratio", GAS_DIVIDER_RATIO)
+                 if divider_ratio is None else divider_ratio)
         if code <= 0:
             return float("inf")
-        vout = (code / 1023.0) * 3.3
+        vout_adc = (code / 1023.0) * 3.3
+        vout = vout_adc / ratio
         if vout <= 0:
             return float("inf")
         return load_resistance * (5.0 - vout) / vout
@@ -231,9 +253,21 @@ class RaspberryPiSensorBackend(SensorBackend):
 
     # -- SensorBackend -----------------------------------------------------
 
+    def _heaters(self, on: bool) -> None:
+        self._gpio.output(PIN_HEATER_GATE, bool(on))
+
     def warm_up(self) -> None:
-        """Let the MQ heaters settle before anything is read from them."""
+        """Power the MQ heaters and let them settle before reading."""
+        self._heaters(True)
         time.sleep(GAS_WARMUP_SECONDS)
+
+    def read_all(self) -> list[SensorSample]:
+        """One cycle: heaters on, warm up, read every slot, heaters off."""
+        try:
+            self.warm_up()
+            return [self.read_slot(i) for i in range(self.slot_count)]
+        finally:
+            self._heaters(False)
 
     def set_roi(self, slot_id: int, box: tuple[int, int, int, int]) -> None:
         """Record the crop box for a slot, as (left, top, right, bottom)."""
@@ -242,10 +276,15 @@ class RaspberryPiSensorBackend(SensorBackend):
     def capture_image(self, slot_id: int) -> str | None:
         """Photograph the shelf under the LED strip and crop to one slot.
 
+        Returns None without touching the camera when the user has switched it
+        off; the inference service then falls back to the sensor-only model.
+
         The LED is switched on only for the exposure. Leaving it lit would
         both waste power and warm the enclosure, which would bias the very
         temperature reading the system depends on.
         """
+        if not self.camera_enabled:
+            return None
         from PIL import Image  # imported here so the module loads without PIL
 
         GPIO = self._gpio

@@ -162,13 +162,14 @@ def main() -> int:
             running += len(group)
 
     for idx, row in enumerate(rows):
+        row["naive_split"] = row["split"]
         row["split"] = assignment[idx]
         row["group_id"] = str(uf.find(idx))
 
     with GROUPED_MANIFEST.open("w", newline="") as fh:
         writer = csv.DictWriter(
             fh, fieldnames=["path", "split", "label", "label_name",
-                            "fruit_type", "group_id"])
+                            "fruit_type", "group_id", "naive_split"])
         writer.writeheader()
         writer.writerows(rows)
 
@@ -188,8 +189,39 @@ def main() -> int:
     print(f"\nTest images within cosine {SIMILARITY_THRESHOLD} of a training "
           f"image: {leak * 100:.2f}% (was 27.2% under the naive split)")
 
+    # The naive split's leakage is the number that motivated all of this, so
+    # compute it here rather than quoting it from a console session.
+    naive_tr = [i for i, r in enumerate(rows) if r.get("naive_split") == "train"]
+    naive_te = [i for i, r in enumerate(rows) if r.get("naive_split") == "test"]
+    naive_best = np.zeros(len(naive_te))
+    NTR = unit[naive_tr]
+    for i in range(0, len(naive_te), 256):
+        naive_best[i:i + 256] = (unit[naive_te[i:i + 256]] @ NTR.T).max(axis=1)
+    naive_leak = float((naive_best >= SIMILARITY_THRESHOLD).mean())
+    print(f"Naive split, for the record: {naive_leak * 100:.2f}% of test images "
+          f"within cosine {SIMILARITY_THRESHOLD} of a training image, median "
+          f"nearest-neighbour similarity {np.median(naive_best):.3f}")
+
+    # Label anomaly: fresh-apple files are named FreshOrange. Centroid cosines
+    # settle whether the images or the filenames are wrong.
+    def centroid(fruit, label):
+        mask = np.array([r["fruit_type"] == fruit and r["label"] == label for r in rows])
+        c = unit[mask].mean(axis=0)
+        return c / np.linalg.norm(c)
+    fa, ra, fo = centroid("apple", "0"), centroid("apple", "1"), centroid("orange", "0")
+    anomaly = {"fresh_apple_vs_rotten_apple": float(fa @ ra),
+               "fresh_apple_vs_fresh_orange": float(fa @ fo)}
+    print(f"Fresh-apple centroid: cos to rotten-apple {anomaly['fresh_apple_vs_rotten_apple']:.3f}, "
+          f"to fresh-orange {anomaly['fresh_apple_vs_fresh_orange']:.3f}")
+
     RESULTS.mkdir(exist_ok=True)
     report = {
+        "naive_split": {
+            "test_leakage_fraction": naive_leak,
+            "nearest_neighbour_percentiles": {
+                f"p{q}": float(np.percentile(naive_best, q)) for q in (50, 90, 95, 99, 100)},
+        },
+        "label_anomaly_centroid_cosine": anomaly,
         "corpus_size": len(rows),
         "similarity_threshold": SIMILARITY_THRESHOLD,
         "linking_pairs": edges,

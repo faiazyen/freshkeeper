@@ -41,6 +41,8 @@ appendices, from that snapshot.
 | `content_ch6_8.py` | Conclusion, References, Lists, Appendices |
 | `build.py` | Assembly and validation |
 | `check_document.py` | Renders to PDF and checks the layout |
+| `results.py` | Loads every result file; all numbers in the text come from here |
+| `check_numbers.py` | Verifies every result-derived number in the built .docx against the result files |
 
 Figures are read from `../docs/figures`, so regenerate those first with
 `make diagrams` and `make screenshots` if the results have changed.
@@ -56,3 +58,13 @@ the margin, captions that lost their figure, headings numbered twice, and code
 listings that fell back to a proportional font because Consolas is not
 installed. It also reports the page count of Chapters 1-6, which is the figure
 the faculty measures against.
+
+## Numbers
+
+No result-derived number is a literal in the content modules. `results.py`
+reads `../results/*.json` and the content modules format from it, so a rerun of
+the pipeline changes the thesis by rebuilding. `check_numbers.py` then confirms
+every expected value appears in the built document and that no unexplained
+four-decimal figure does. The first draft typed its tables in by hand; three
+of them were wrong within a day, and one number (stage-1 epochs) was from a
+superseded run.

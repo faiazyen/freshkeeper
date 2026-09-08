@@ -13,6 +13,7 @@ Run:  python -m freshkeeper.ml.embeddings
 
 from __future__ import annotations
 
+import argparse
 import csv
 import sys
 import time
@@ -31,13 +32,14 @@ OUT_DIR = ROOT / "data" / "embeddings"
 BATCH_SIZE = 64
 
 
-def load_manifest() -> list[dict]:
+def load_manifest(path: Path | None = None) -> list[dict]:
     """Prefer the group-aware manifest once the audit has produced one.
 
     The naive manifest splits near-duplicate variants across train and test,
     which inflates every score computed from it. See scripts/audit_dataset.py.
     """
-    path = GROUPED_MANIFEST if GROUPED_MANIFEST.exists() else MANIFEST
+    if path is None:
+        path = GROUPED_MANIFEST if GROUPED_MANIFEST.exists() else MANIFEST
     with path.open() as fh:
         return list(csv.DictReader(fh))
 
@@ -56,16 +58,21 @@ def build_pipeline(paths: list[str]) -> tf.data.Dataset:
 
 
 def main() -> int:
-    rows = load_manifest()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--manifest", default=None)
+    parser.add_argument("--out", default=None, help="output directory")
+    args = parser.parse_args()
+    out_dir = Path(args.out) if args.out else OUT_DIR
+    rows = load_manifest(Path(args.manifest) if args.manifest else None)
     if not rows:
         print("Empty manifest; run scripts/prepare_dataset.py first.")
         return 1
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     # The audit already embedded the whole corpus in manifest order. Reuse it
     # rather than paying for 12,335 forward passes again.
-    cache = OUT_DIR / "corpus_x.npy"
+    cache = OUT_DIR / "corpus_x.npy"  # always the canonical cache
     corpus = np.load(cache) if cache.exists() else None
     backbone = None if corpus is not None else build_backbone(trainable=False)
 
@@ -83,12 +90,12 @@ def main() -> int:
             features = backbone.predict(build_pipeline(paths), verbose=0)
         elapsed = time.time() - start
 
-        np.save(OUT_DIR / f"{split}_x.npy", features.astype(np.float32))
-        np.save(OUT_DIR / f"{split}_y.npy", labels)
-        np.save(OUT_DIR / f"{split}_fruit.npy", fruits)
+        np.save(out_dir / f"{split}_x.npy", features.astype(np.float32))
+        np.save(out_dir / f"{split}_y.npy", labels)
+        np.save(out_dir / f"{split}_fruit.npy", fruits)
         print(f"  {split:5s} {features.shape}  {elapsed:6.2f}s")
 
-    print(f"\nEmbeddings written to {OUT_DIR}")
+    print(f"\nEmbeddings written to {out_dir}")
     return 0
 
 

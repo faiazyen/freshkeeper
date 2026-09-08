@@ -1,0 +1,866 @@
+{
+  "hours_per_cycle": 12.0,
+  "cycles": 23,
+  "shelf": [
+    {
+      "slot": 0,
+      "name": "Strawberries",
+      "commodity": "strawberry"
+    },
+    {
+      "slot": 1,
+      "name": "Bananas",
+      "commodity": "banana"
+    },
+    {
+      "slot": 2,
+      "name": "Red grapes",
+      "commodity": "grape"
+    },
+    {
+      "slot": 3,
+      "name": "Guavas",
+      "commodity": "guava"
+    },
+    {
+      "slot": 4,
+      "name": "Oranges",
+      "commodity": "orange"
+    },
+    {
+      "slot": 5,
+      "name": "Pomegranate",
+      "commodity": "pomegranate"
+    }
+  ],
+  "log": [
+    {
+      "cycle": 1,
+      "day": 0.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "day": 1.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "day": 1.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "fresh",
+          "score": 99.9
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 4,
+      "day": 2.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "fresh",
+          "score": 89.6
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 5,
+      "day": 2.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "marginal",
+          "score": 50.5
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 6,
+      "day": 3.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 99.9
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 7,
+      "day": 3.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "marginal",
+          "score": 49.9
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 98.3
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 99.9
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 8,
+      "day": 4.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "marginal",
+          "score": 49.6
+        },
+        {
+          "name": "Bananas",
+          "state": "fresh",
+          "score": 84.5
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 98.6
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 9,
+      "day": 4.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 2.6
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 55.3
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 94.2
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 10,
+      "day": 5.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.1
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 50.1
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 99.5
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 95.8
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 11,
+      "day": 5.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "fresh",
+          "score": 97.1
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 89.5
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 12,
+      "day": 6.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 70.0
+        },
+        {
+          "name": "Guavas",
+          "state": "fresh",
+          "score": 78.3
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 13,
+      "day": 6.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 49.9
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 56.4
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 52.8
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 14,
+      "day": 7.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 49.9
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.7
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 50.1
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 15,
+      "day": 7.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.8
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 16,
+      "day": 8.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 46.1
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.6
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 100.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 17,
+      "day": 8.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "marginal",
+          "score": 36.7
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.8
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 99.8
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 18,
+      "day": 9.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 6.1
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.9
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 99.4
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 19,
+      "day": 9.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 0.3
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.9
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 99.4
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 20,
+      "day": 10.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 0.1
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 50.0
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.6
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 98.1
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 21,
+      "day": 10.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 49.2
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 49.4
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 83.0
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 22,
+      "day": 11.0,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "marginal",
+          "score": 37.2
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 34.8
+        },
+        {
+          "name": "Oranges",
+          "state": "fresh",
+          "score": 81.7
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    },
+    {
+      "cycle": 23,
+      "day": 11.5,
+      "items": [
+        {
+          "name": "Strawberries",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Bananas",
+          "state": "spoiled",
+          "score": 0.0
+        },
+        {
+          "name": "Red grapes",
+          "state": "spoiled",
+          "score": 21.3
+        },
+        {
+          "name": "Guavas",
+          "state": "marginal",
+          "score": 33.0
+        },
+        {
+          "name": "Oranges",
+          "state": "marginal",
+          "score": 61.2
+        },
+        {
+          "name": "Pomegranate",
+          "state": "fresh",
+          "score": 100.0
+        }
+      ]
+    }
+  ]
+}

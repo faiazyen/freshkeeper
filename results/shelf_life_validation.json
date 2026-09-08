@@ -1,0 +1,83 @@
+{
+  "conditions": "4 degC, 85% RH; spoiled at extent >= 0.70",
+  "rows": [
+    {
+      "commodity": "Strawberry",
+      "published_days": 5.0,
+      "modelled_days": 5.083333333333333,
+      "error_percent": 1.6666666666666607
+    },
+    {
+      "commodity": "Banana",
+      "published_days": 10.0,
+      "modelled_days": 10.083333333333334,
+      "error_percent": 0.8333333333333393
+    },
+    {
+      "commodity": "Grape",
+      "published_days": 14.0,
+      "modelled_days": 14.0,
+      "error_percent": 0.0
+    },
+    {
+      "commodity": "Guava",
+      "published_days": 14.0,
+      "modelled_days": 14.083333333333334,
+      "error_percent": 0.5952380952380995
+    },
+    {
+      "commodity": "Jujube",
+      "published_days": 21.0,
+      "modelled_days": 21.083333333333332,
+      "error_percent": 0.3968253968253912
+    },
+    {
+      "commodity": "Orange",
+      "published_days": 25.0,
+      "modelled_days": 25.0,
+      "error_percent": 0.0
+    },
+    {
+      "commodity": "Apple",
+      "published_days": 30.0,
+      "modelled_days": 30.083333333333332,
+      "error_percent": 0.27777777777777385
+    },
+    {
+      "commodity": "Pomegranate",
+      "published_days": 60.0,
+      "modelled_days": 60.0,
+      "error_percent": 0.0
+    }
+  ],
+  "temperature_sweep_days": {
+    "strawberry": {
+      "2.0": 7.0,
+      "4.0": 5.083333333333333,
+      "7.0": 3.3333333333333335,
+      "10.0": 2.4166666666666665,
+      "15.0": 1.5
+    },
+    "banana": {
+      "2.0": 14.0,
+      "4.0": 10.083333333333334,
+      "7.0": 6.666666666666667,
+      "10.0": 4.75,
+      "15.0": 3.0
+    },
+    "apple": {
+      "2.0": 38.416666666666664,
+      "4.0": 30.083333333333332,
+      "7.0": 19.833333333333332,
+      "10.0": 14.083333333333334,
+      "15.0": 8.833333333333334
+    },
+    "pomegranate": {
+      "2.0": 83.75,
+      "4.0": 60.0,
+      "7.0": 39.583333333333336,
+      "10.0": 28.083333333333332,
+      "15.0": 17.666666666666668
+    }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "tests_passed": 130,
+  "test_modules": [
+    "test_alerts.py",
+    "test_api.py",
+    "test_inference.py",
+    "test_maintenance.py",
+    "test_model.py",
+    "test_rpi_backend.py",
+    "test_sensors.py",
+    "test_spoilage_model.py"
+  ],
+  "coverage_total_percent": 52.0,
+  "coverage_files": {
+    "freshkeeper/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/acquisition/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/acquisition/scheduler.py": {
+      "statements": 29,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/alerts.py": {
+      "statements": 80,
+      "covered": 79,
+      "percent": 98.8
+    },
+    "freshkeeper/api/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/api/app.py": {
+      "statements": 186,
+      "covered": 159,
+      "percent": 85.5
+    },
+    "freshkeeper/db/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/db/maintenance.py": {
+      "statements": 13,
+      "covered": 13,
+      "percent": 100.0
+    },
+    "freshkeeper/db/models.py": {
+      "statements": 73,
+      "covered": 72,
+      "percent": 98.6
+    },
+    "freshkeeper/db/session.py": {
+      "statements": 37,
+      "covered": 30,
+      "percent": 81.1
+    },
+    "freshkeeper/hardware/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/hardware/base.py": {
+      "statements": 37,
+      "covered": 37,
+      "percent": 100.0
+    },
+    "freshkeeper/hardware/rpi_backend.py": {
+      "statements": 152,
+      "covered": 62,
+      "percent": 40.8
+    },
+    "freshkeeper/hardware/sim_backend.py": {
+      "statements": 142,
+      "covered": 139,
+      "percent": 97.9
+    },
+    "freshkeeper/hardware/spoilage_model.py": {
+      "statements": 90,
+      "covered": 87,
+      "percent": 96.7
+    },
+    "freshkeeper/ml/__init__.py": {
+      "statements": 0,
+      "covered": 0,
+      "percent": 100.0
+    },
+    "freshkeeper/ml/embeddings.py": {
+      "statements": 62,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/ml/evaluate.py": {
+      "statements": 115,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/ml/export_tflite.py": {
+      "statements": 101,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/ml/inference.py": {
+      "statements": 82,
+      "covered": 62,
+      "percent": 75.6
+    },
+    "freshkeeper/ml/model.py": {
+      "statements": 61,
+      "covered": 61,
+      "percent": 100.0
+    },
+    "freshkeeper/ml/sensor_corpus.py": {
+      "statements": 108,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/ml/train_cnn.py": {
+      "statements": 102,
+      "covered": 0,
+      "percent": 0.0
+    },
+    "freshkeeper/ml/train_fusion.py": {
+      "statements": 71,
+      "covered": 0,
+      "percent": 0.0
+    }
+  },
+  "tracked_files": 74,
+  "python_lines": 5754
+}

@@ -4,6 +4,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 
 from docx_builder import add_toc, caption, heading, page_break, para
+from results import Results
 
 TITLE = "Design of an IoT-Based Food Spoilage Prediction System for Waste Reduction"
 AUTHOR = "Faiaz Hossain Mazumder Yen"
@@ -28,6 +29,7 @@ def _centre(document, text: str, size: int, bold: bool = False,
 
 
 def build(document) -> None:
+    R = Results()
     # -- title page ------------------------------------------------------
     _centre(document, "Czech University of Life Sciences Prague", 17, bold=True,
             space_after=6)
@@ -56,8 +58,26 @@ def build(document) -> None:
          "thesis. As the author of the bachelor thesis, I declare that the thesis "
          "does not break any copyrights.")
     para(document,
-         "The prototype software described in this thesis was written by the "
-         "author and is published under the MIT licence. The image corpus used "
+         "I declare that I have used AI tools in accordance with the "
+         "university's internal regulations and principles of academic "
+         "integrity and ethics.")
+    para(document,
+         "[DISCLOSURE REQUIRED BY RECTOR'S DIRECTIVE 5/2019, ART. (6). The "
+         "author must state here, truthfully and in their own words, how AI "
+         "tools were used. As of this draft: the software prototype, the "
+         "document generator and the text of every chapter of this draft were "
+         "produced with the assistance of an AI system (Claude, Anthropic) "
+         "working from the author's instructions. Art. (5) makes AI "
+         "inadmissible for formulating the thesis results and for discussing "
+         "and summarising its conclusions; Chapters 2, 5 and 6 and the abstract "
+         "therefore have to be rewritten by the author personally before "
+         "submission, and this notice replaced with the author's own "
+         "statement. See the accompanying audit report.]", italic=True)
+    para(document,
+         "The prototype software described in this thesis was developed with AI "
+         "assistance as an auxiliary tool for the research part, is published "
+         "under the MIT licence, and its development history is recorded in the "
+         "repository. The image corpus used "
          "for training is a third-party dataset released under CC-BY-4.0 and is "
          "credited in Chapter 4 and in the references. Machine learning "
          "frameworks, libraries and the pretrained MobileNetV2 weights are "
@@ -103,20 +123,24 @@ def build(document) -> None:
          "each monitored item as fresh, marginal or spoiled, and presents the "
          "result through a web interface served from the device. All inference "
          "runs locally; no image leaves the home network. The software is "
-         "complete and tested: 5,472 lines of Python across a physical spoilage "
-         "model, a hardware abstraction layer with both real and simulated "
-         "backends, a machine learning pipeline, a REST API, a database and a "
-         "single-page interface, covered by 119 automated tests.")
+         f"complete and tested: {R.n(R.loc)} lines of Python across a physical "
+         "spoilage model, a hardware abstraction layer with both real and "
+         "simulated backends, a machine learning pipeline, a REST API, a "
+         f"database and a single-page interface, covered by {R.tests} automated "
+         "tests.")
     para(document,
-         "Three results are reported. A MobileNetV2 classifier trained on 12,335 "
-         "real photographs reaches 98.0% accuracy distinguishing fresh from "
+         "Three results are reported. A MobileNetV2 classifier trained on "
+         f"{R.n(R.audit['corpus_size'])} real photographs reaches "
+         f"{R.pct(R.visual['accuracy'])} accuracy distinguishing fresh from "
          "rotten produce on a held-out split, after an audit found and removed "
          "near-duplicate leakage that had inflated an earlier figure. A physical "
          "spoilage model built from the Ratkowsky and Gompertz equations "
          "reproduces published refrigerated shelf lives for eight commodities to "
-         "within 1.7%. On the three-state task, a sensor-only classifier reaches "
-         "96.9% accuracy and the late-fusion model 96.0%, so fusion did not beat "
-         "its own baseline. That negative result is analysed rather than "
+         f"within {max(abs(r['error_percent']) for r in R.shelf['rows']):.1f}%. "
+         "On the three-state task, a sensor-only classifier reaches "
+         f"{R.pct(R.acc('sensor_only'))} accuracy and the late-fusion model "
+         f"{R.pct(R.acc('fusion'))}, so fusion did not beat its own baseline. "
+         "That negative result is analysed rather than "
          "hidden: because the simulated sensor features and the ground-truth "
          "labels derive from the same physical model, the sensor branch has "
          "privileged access to the target, and validating fusion honestly needs "

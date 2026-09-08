@@ -161,6 +161,8 @@ def wiring() -> None:
          "CSI-2 ribbon\n(dedicated bus)", "left"),
         ("LED strip 5 V\nvia 2N7000 MOSFET", 0.72, 0.42, 0.24, 0.11,
          f"GPIO {rpi.PIN_LED_GATE}\ngate drive", "left"),
+        ("MQ heater 5 V rail\nvia IRLZ44N MOSFET", 0.72, 0.24, 0.24, 0.11,
+         f"GPIO {rpi.PIN_HEATER_GATE}\ngate drive", "left"),
     ]
     for label, x, y, w, h, pins, side in peripherals:
         box(ax, x, y, w, h, label, face="#f8fafc", fontsize=7.8)
@@ -180,7 +182,7 @@ def wiring() -> None:
     arrow(ax, (0.22, 0.13), (0.18, 0.22), colour=MUTED)
     ax.text(0.29, 0.10,
             f"CH{rpi.ADC_CHANNEL_MQ135} / CH{rpi.ADC_CHANNEL_MQ3}\n"
-            "analogue out, divided\nto stay under 3.3 V",
+            f"analogue out, divided x{rpi.GAS_DIVIDER_RATIO:.2f}\nto stay under 3.3 V",
             fontsize=6.6, color=MUTED, va="center")
 
     ax.text(0.5, 0.955, "Sensor wiring, BCM pin numbering",
@@ -190,9 +192,9 @@ def wiring() -> None:
             "the MCP3008 over SPI",
             ha="center", fontsize=8, color=MUTED, style="italic")
     ax.text(0.5, 0.775,
-            "Gas heaters and the load cell share the 5 V rail: they are read "
-            f"{int(rpi.WEIGHT_SETTLE_DELAY * 1000)} ms apart so heater switching "
-            "does not couple into the HX711",
+            "Gas heaters are gated on only for the measurement window and are read "
+            f"{int(rpi.WEIGHT_SETTLE_DELAY * 1000)} ms before the HX711 so heater "
+            "switching does not couple into the weight channel",
             ha="center", fontsize=7.4, color="#b45309")
     fig.savefig(FIGURES / "wiring.png", dpi=210, bbox_inches="tight")
     plt.close(fig)
@@ -364,6 +366,29 @@ def shelf_life_validation() -> None:
     fig.savefig(FIGURES / "shelf_life_validation.png", dpi=210)
     plt.close(fig)
     print("  shelf_life_validation.png")
+
+    # The thesis table of modelled vs published shelf lives reads this file.
+    import json
+    sweep = {}
+    for commodity in ("strawberry", "banana", "apple", "pomegranate"):
+        profile = profile_for(commodity)
+        sweep[commodity] = {}
+        for temp in (2.0, 4.0, 7.0, 10.0, 15.0):
+            steps = int(150 * 24 / 2)
+            states = integrate_spoilage(profile, [temp] * steps, [0.85] * steps,
+                                        2.0, profile.typical_mass_g)
+            hit = next((s.elapsed_hours / 24 for s in states
+                        if s.spoilage_extent >= SPOILED_THRESHOLD), None)
+            sweep[commodity][str(temp)] = hit
+    (ROOT / "results").mkdir(exist_ok=True)
+    (ROOT / "results" / "shelf_life_validation.json").write_text(json.dumps({
+        "conditions": f"4 degC, 85% RH; spoiled at extent >= {SPOILED_THRESHOLD:.2f}",
+        "rows": [{"commodity": n, "published_days": p, "modelled_days": m,
+                  "error_percent": 100 * (m - p) / p}
+                 for n, p, m in zip(names, published, modelled)],
+        "temperature_sweep_days": sweep,
+    }, indent=2))
+    print("  shelf_life_validation.json")
 
 
 # --------------------------------------------------------------------------

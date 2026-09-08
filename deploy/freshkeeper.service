@@ -1,0 +1,17 @@
+# systemd unit for the FreshKeeper monitoring service on a Raspberry Pi.
+#   sudo cp deploy/freshkeeper.service /etc/systemd/system/
+#   sudo systemctl enable --now freshkeeper
+[Unit]
+Description=FreshKeeper food spoilage monitor
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/freshkeeper
+ExecStart=/home/pi/freshkeeper/.venv/bin/python scripts/run_server.py --db data/freshkeeper.db --host 0.0.0.0 --port 5000 --live
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

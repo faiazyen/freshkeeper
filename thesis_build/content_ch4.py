@@ -5,10 +5,21 @@ from docx_builder import (
     rich_para, table,
 )
 
+from results import Results
+
 FIG = "../freshkeeper/docs/figures"
+
+_COV_MODULES = [
+    "freshkeeper/hardware/base.py", "freshkeeper/ml/model.py", "freshkeeper/alerts.py",
+    "freshkeeper/db/models.py", "freshkeeper/hardware/sim_backend.py",
+    "freshkeeper/hardware/spoilage_model.py", "freshkeeper/api/app.py",
+    "freshkeeper/db/session.py", "freshkeeper/ml/inference.py",
+    "freshkeeper/db/maintenance.py", "freshkeeper/hardware/rpi_backend.py",
+]
 
 
 def build(document) -> None:
+    R = Results()
     heading(document, "Practical Part", 1)
 
     para(document,
@@ -19,8 +30,9 @@ def build(document) -> None:
          "together.")
 
     para(document,
-         "The complete implementation is 5,472 lines of Python across 73 files, "
-         "with 119 automated tests. Listings in this chapter are excerpts; "
+         f"The complete implementation is {R.n(R.loc)} lines of Python across "
+         f"{R.files} tracked files, with {R.tests} automated tests. Listings in "
+         "this chapter are excerpts; "
          "Appendix A contains the significant modules in full and the repository "
          "structure is given in Appendix B.")
 
@@ -29,7 +41,7 @@ def build(document) -> None:
 
     para(document,
          "The system follows the three-layer decomposition standard in IoT work "
-         "(Atzori et al., 2010; Nemade et al., 2024), with one departure: the "
+         "(Atzori et al., 2010), with one departure: the "
          "network layer carries data between components on the same board rather "
          "than to a remote server, because all processing is local.")
 
@@ -107,9 +119,10 @@ def build(document) -> None:
     figure(document, f"{FIG}/wiring.png", "Figure 2",
            "Sensor wiring in BCM pin numbering. The DHT22 uses a single-wire "
            "protocol with a pull-up; the HX711 is bit-banged over two pins; both "
-           "gas sensors reach the Pi through the MCP3008 over SPI0; the LED "
-           "strip is switched by a MOSFET rather than driven from a GPIO pin "
-           "directly.", width_cm=15.5)
+           "gas sensors reach the Pi through the MCP3008 over SPI0 via a "
+           "resistive divider; the LED strip and the gas-heater supply rail are "
+           "each switched by a MOSFET rather than driven from a GPIO pin.",
+           width_cm=15.5)
 
     para(document,
          "Three details in that design are not obvious and are recorded here "
@@ -123,9 +136,20 @@ def build(document) -> None:
 
     para(document,
          "The MQ sensors need a 5 V heater supply, but the MCP3008 input must "
-         "stay below 3.3 V, so the sensor output is divided down before it "
-         "reaches the converter. Feeding 5 V logic into a 3.3 V input is a "
-         "common way to destroy the converter.")
+         "stay below 3.3 V, so the sensor output is divided down by a factor of "
+         "0.66 before it reaches the converter, and the driver scales the "
+         "reading back up before applying the resistance formula. An earlier "
+         "revision of the driver omitted that step and would have reported "
+         "every resistance too high by the divider ratio — a defect no test "
+         "could catch without hardware, which is why it is recorded here.")
+
+    para(document,
+         "The heater supply rail for both gas sensors is switched through a "
+         "logic-level MOSFET on GPIO 17, so the heaters draw power only during "
+         "the measurement window. The driver switches them on at the start of "
+         "a cycle, waits 30 seconds for the elements to settle, reads every "
+         "slot, and switches them off again — in a finally block, so a sensor "
+         "fault mid-cycle cannot leave them burning.")
 
     para(document,
          "The gas heaters and the load cell share the 5 V rail, and heater "
@@ -203,8 +227,10 @@ def build(document) -> None:
 
     para(document,
          "The Raspberry Pi driver is written and syntactically complete, and the "
-         "test suite verifies its interface conformance, pin-map consistency and "
-         "pure conversion functions. Its readings have not been validated "
+         "test suite verifies its interface conformance, pin-map consistency, "
+         "the divider correction, that the heaters are switched off even when a "
+         "read raises, and the pure conversion functions. Its readings have not "
+         "been validated "
          "against instruments, and the module's own docstring says so, so that "
          "nobody reading the code mistakes it for a tested component.")
 
@@ -385,8 +411,13 @@ def build(document) -> None:
     para(document,
          "Simulated readings pass through the transfer functions of the "
          "specified parts rather than being reported as clean values. "
-         "Concentration becomes a resistance ratio through the datasheet power "
-         "law, the ratio becomes a voltage across the load resistor, the MCP3008 "
+         "Concentration becomes a resistance ratio through a power law whose "
+         "coefficients were digitised from the datasheet sensitivity curves by "
+         "the open-source MQSensorsLib project (Califa Urquiza, 2019) — the "
+         "Hanwei datasheets publish the curves as graphs, not as equations, so "
+         "the coefficients are a community fit rather than a manufacturer "
+         "specification. The ratio becomes a voltage across the load resistor, "
+         "the MCP3008 "
          "quantises that to 10 bits, and the firmware inverts the chain. The "
          "round trip is lossy, and that loss is part of what the classifier has "
          "to cope with. Gaussian noise is added at the DHT22's stated accuracy "
@@ -448,39 +479,48 @@ def build(document) -> None:
     heading(document, "An audit that changed the results", 3)
 
     para(document,
-         "The first training run reached 99.7% validation accuracy, which is not "
-         "a believable number for this task. Rather than report it, the corpus "
-         "was audited.")
+         f"The first training run, on the naive split, reached "
+         f"{R.pct(R.naive_best_val) if R.naive_best_val else 'about 99.7%'} "
+         "validation accuracy, which is not a believable number for this task. "
+         "Rather than report it, the corpus was audited.")
 
     para(document,
-         "Hashing found nothing: all 12,335 files are byte-distinct, so "
-         "conventional duplicate detection reports a clean dataset. The problem "
-         "was visible only in feature space. Embedding every image with the "
-         "frozen backbone and measuring each test image against its nearest "
-         "training neighbour showed 27.2% of test images within cosine 0.95 of "
+         f"Hashing found nothing: all {R.n(R.audit['corpus_size'])} files are "
+         "byte-distinct, so conventional duplicate detection reports a clean "
+         "dataset. The problem was visible only in feature space. Embedding "
+         "every image with the frozen backbone and measuring each test image "
+         f"against its nearest training neighbour showed {R.pct(R.naive_leak)} "
+         f"of test images within cosine {R.audit['similarity_threshold']} of "
          "some training image, and a median nearest-neighbour similarity of "
-         "0.913. The corpus is an augmented set, and variants derived from the "
-         "same original photograph were being separated across the split.")
+         f"{R.naive_median_nn:.3f}. The corpus is an augmented set, and "
+         "variants derived from the same original photograph were being "
+         "separated across the split.")
 
     para(document,
          "The remedy was to split by group rather than by image. Pairs above "
          "cosine 0.95 were joined, connected components collapsed with "
          "union-find, and whole groups assigned to splits with stratification "
-         "preserved. The 12,335 images resolve into 9,817 groups, the largest "
-         "containing 10 images. Residual leakage afterwards is 0.00%.")
+         f"preserved. The {R.n(R.audit['corpus_size'])} images resolve into "
+         f"{R.n(R.audit['n_groups'])} groups, the largest containing "
+         f"{R.audit['largest_group']} images. Residual leakage afterwards is "
+         f"{R.pct(R.audit['residual_test_leakage_fraction'], 2)}.")
 
+    _sizes = R.audit["group_size_distribution"]
     table(document,
-          ["Group size", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-          [["Groups", "7,909", "1,478", "316", "78", "18", "12", "3", "1", "1", "1"]],
+          ["Group size"] + list(_sizes.keys()),
+          [["Groups"] + [R.n(v) for v in _sizes.values()]],
           "Table 4",
-          "Near-duplicate group sizes at cosine 0.95. Most images are "
-          "independent, but 1,908 groups contain variants that a naive split "
-          "would have scattered across training and test.",
+          f"Near-duplicate group sizes at cosine {R.audit['similarity_threshold']}. "
+          "Most images are independent, but "
+          f"{R.n(sum(v for k, v in _sizes.items() if int(k) > 1))} groups contain "
+          "variants that a naive split would have scattered across training "
+          "and test.",
           widths=[2.6] + [1.25] * 10, font_size=8.5)
 
     para(document,
-         "The retrained model scored 99.5%, essentially unchanged. Leakage was "
-         "therefore not the explanation, and the honest conclusion is that the "
+         f"The retrained model scored {R.pct(R.stage2_best_val)} on validation, "
+         "essentially unchanged. Leakage was therefore not the explanation, and "
+         "the honest conclusion is that the "
          "task itself is easy. Chapter 5 takes that up, because it changes what "
          "the headline accuracy is evidence for. The audit was still worth doing: "
          "without it the figure would have rested on an assumption nobody had "
@@ -493,7 +533,9 @@ def build(document) -> None:
          "apples carry filenames beginning FreshOrange, which suggests either "
          "mislabelling or duplicated files. Comparing group centroids in "
          "embedding space settled it: the fresh-apple centroid sits closer to "
-         "rotten-apple (0.861) than to fresh-orange (0.847), and the two file "
+         f"rotten-apple ({R.anomaly['fresh_apple_vs_rotten_apple']:.3f}) than to "
+         f"fresh-orange ({R.anomaly['fresh_apple_vs_fresh_orange']:.3f}), and the "
+         "two file "
          "sets are disjoint. The images are apples; only the filenames are "
          "wrong. The metadata column was trusted and the filenames disregarded.")
 
@@ -571,7 +613,8 @@ def build(document) -> None:
 
     para(document,
          "Stage two initially trained to exactly chance — around 51% accuracy on "
-         "a balanced binary task — while stage one had reached 97.8%. The cause "
+         f"a balanced binary task — while stage one had reached "
+         f"{R.pct(R.stage1_final_val)}. The cause "
          "was double preprocessing: MobileNetV2 normalisation was applied both "
          "inside the model and again in the input pipeline, mapping every input "
          "into a band roughly 0.008 wide. The fix was to preprocess in exactly "
@@ -803,9 +846,11 @@ if pre["accuracy"] < 0.90:
          "make that painful.")
 
     figure(document, f"{FIG}/ui_dashboard.png", "Figure 7",
-           "Dashboard after twelve simulated days. Each card carries a state "
-           "badge, a freshness bar, days remaining, mass and age. The alert at "
-           "the top fired on a transition into the spoiled state.", width_cm=15.0)
+           "Dashboard from the accelerated demonstration run, captured at a "
+           "cycle in which an item had just crossed into a new state so that "
+           "the alert banner is visible; on the following cycle it would be "
+           "silent again. Each card carries a state badge, a freshness bar, "
+           "days remaining, mass and age.", width_cm=15.0)
 
     para(document,
          "Freshness state is never carried by colour alone. Each card also has a "
@@ -855,15 +900,21 @@ if pre["accuracy"] < 0.90:
          "third party to keep a promise.")
 
     para(document,
-         "The camera can be disabled from the interface, and the system degrades "
-         "to the sensor-only model rather than refusing to run. Given the "
+         "The camera can be switched off from the interface. The switch is "
+         "honoured by the sensor backend itself — capture_image() returns None "
+         "without touching the camera — so no code path above it can "
+         "photograph the shelf, and the system degrades to the sensor-only "
+         "model rather than refusing to run. Given the "
          "ablation result in Chapter 5, that degraded mode is in fact the more "
          "accurate one under the present evaluation, which is an unexpectedly "
          "comfortable position for a privacy control to be in.")
 
     para(document,
-         "Retention is bounded: sensor readings older than 90 days and "
-         "predictions older than 30 days are deleted. A monitoring device does "
+         "Retention is bounded: at the end of every measurement cycle, sensor "
+         "readings older than 90 days and predictions older than 30 days are "
+         "deleted, while items and their recorded outcomes are kept because "
+         "they are what the evaluation is measured against. A monitoring device "
+         "does "
          "not need a permanent record of a household's diet, and keeping one "
          "creates risk without creating value.")
 
@@ -917,7 +968,8 @@ if pre["accuracy"] < 0.90:
          "Bookworm 64-bit, enabling SPI and the camera interface, installing the "
          "device-only dependencies listed separately from the main requirements "
          "file, copying the model artefacts, running the calibration procedure "
-         "and starting the service under systemd so it survives a reboot.")
+         "and installing the systemd unit shipped in the repository so the "
+         "service starts at boot and restarts on failure.")
 
     para(document,
          "On the device, tflite-runtime replaces full TensorFlow. It is a "
@@ -929,23 +981,18 @@ if pre["accuracy"] < 0.90:
     heading(document, "Testing", 2)
 
     para(document,
-         "The suite is 119 tests across five modules, running in under nine "
-         "seconds. Coverage of the runtime modules is between 76% and 100%; the "
-         "one-shot training scripts are not unit-tested, which pulls the overall "
-         "figure to 51%.")
+         f"The suite is {R.tests} tests across {R.test_modules} modules, running "
+         "in under ten seconds. Coverage of the runtime modules is between "
+         f"{min(R.cov(m)['percent'] for m in _COV_MODULES):.0f}% and "
+         f"{max(R.cov(m)['percent'] for m in _COV_MODULES):.0f}%; the one-shot "
+         "training scripts are not unit-tested, which pulls the overall figure "
+         f"to {R.cov_total:.0f}%.")
 
     table(document,
           ["Module", "Statements", "Coverage"],
-          [["hardware/base.py", "36", "100%"],
-           ["ml/model.py", "61", "100%"],
-           ["alerts.py", "75", "99%"],
-           ["db/models.py", "73", "99%"],
-           ["hardware/sim_backend.py", "139", "98%"],
-           ["hardware/spoilage_model.py", "90", "97%"],
-           ["api/app.py", "168", "84%"],
-           ["db/session.py", "37", "81%"],
-           ["ml/inference.py", "82", "76%"],
-           ["hardware/rpi_backend.py", "136", "35%"]],
+          [[m.replace("freshkeeper/", ""), str(R.cov(m)["statements"]),
+            f"{R.cov(m)['percent']:.0f}%"]
+           for m in sorted(_COV_MODULES, key=lambda m: -R.cov(m)["percent"])],
           "Table 5",
           "Test coverage of the runtime modules. The Raspberry Pi driver is low "
           "because most of it cannot execute off a Pi; what is tested there is "
@@ -954,7 +1001,13 @@ if pre["accuracy"] < 0.90:
           widths=[7.0, 3.5, 3.5])
 
     para(document,
-         "Several tests exist specifically to prevent a bug from returning. The "
+         "Several tests exist specifically to prevent a bug from returning. A "
+         "subprocess test runs the simulation under two different "
+         "PYTHONHASHSEED values and requires identical output, because an "
+         "earlier version seeded per-item randomness from Python's hash() of a "
+         "string — which the interpreter salts per process — so that the "
+         "sensor corpus, and everything trained on it, silently differed on "
+         "every run while the documentation claimed exact reproducibility. The "
          "calibration test fails if any growth coefficient drifts from its "
          "published reference. A round-trip test guards the MQ conversion "
          "direction. A mass-delta test asserts that the change is measured "

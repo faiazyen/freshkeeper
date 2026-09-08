@@ -316,9 +316,10 @@ def integrate_spoilage(
         mass *= (1.0 - profile.transpiration_coeff * vpd * interval_hours)
         mass_loss = 1.0 - (mass / initial_mass_g)
 
-        # Volatiles accumulate with the population but are also flushed out of
-        # a real fridge; a first-order washout keeps the headroom concentration
-        # bounded rather than growing without limit.
+        # Volatile concentration is taken as proportional to the log population
+        # increase. No washout term is modelled: the Gompertz asymptote already
+        # bounds the population, so concentration saturates with it. (An earlier
+        # comment here described a first-order washout that was never written.)
         ethanol = profile.ethanol_yield_ppm * log_increase
         ammonia = profile.ammonia_yield_ppm * log_increase
 

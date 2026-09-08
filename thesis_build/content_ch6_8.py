@@ -7,10 +7,13 @@ from docx_builder import (
     reset_numbering, rich_para, table, unnumbered_heading,
 )
 
+from results import Results
+
 REPO = Path(__file__).resolve().parents[1] / "freshkeeper"
 
 
 def build(document) -> None:
+    R = Results()
     # ==================================================================
     heading(document, "Conclusion", 1)
 
@@ -28,7 +31,8 @@ def build(document) -> None:
         ("Yes. A model assembled from the Ratkowsky square-root relationship, "
          "the modified Gompertz growth curve and the Magnus-Tetens vapour "
          "pressure formulation reproduces published refrigerated shelf lives to "
-         "within 1.7% across eight commodities spanning five to sixty days. It "
+         f"within {max(abs(r['error_percent']) for r in R.shelf['rows']):.1f}% "
+         "across eight commodities spanning five to sixty days. It "
          "extrapolates in temperature, which it was not fitted for, with a "
          "coefficient of roughly 3 per ten degrees — inside the range reported "
          "for microbial spoilage.", ""),
@@ -36,9 +40,10 @@ def build(document) -> None:
 
     rich_para(document, [
         ("RQ2, on visual classification. ", "b"),
-        ("A transfer-learned MobileNetV2 reaches 98.0% accuracy and 0.9986 AUC "
-         "distinguishing fresh from rotten produce on a leakage-controlled split "
-         "of 1,837 real photographs. The second half of the question has the "
+        (f"A transfer-learned MobileNetV2 reaches {R.pct(R.visual['accuracy'])} "
+         f"accuracy and {R.f4(R.visual['auc'])} AUC distinguishing fresh from "
+         "rotten produce on a leakage-controlled split of "
+         f"{R.n(R.visual['n'])} real photographs. The second half of the question has the "
          "more useful answer: that figure does not demonstrate early spoilage "
          "detection, because public corpora contain only unambiguous cases. The "
          "intermediate state a prediction system exists to catch is absent, so "
@@ -48,34 +53,38 @@ def build(document) -> None:
 
     rich_para(document, [
         ("RQ3, on sensor fusion. ", "b"),
-        ("No. Under this simulation the sensor-only baseline reaches 96.9% and "
-         "the best fusion variant 96.0%, so adding the visual branch costs "
+        (f"No. Under this simulation the sensor-only baseline reaches "
+         f"{R.pct(R.acc('sensor_only'))} and the best fusion variant "
+         f"{R.pct(R.acc('fusion'))}, so adding the visual branch costs "
          "accuracy. The cause is structural: because the sensor features and "
          "the ground-truth labels derive from one physical model, the sensor "
          "branch has privileged access to the target. A secondary finding is "
          "that relative branch width at the join matters — projecting the "
          "visual embedding from 1280 to 64 dimensions before concatenation "
-         "recovered 1.7 percentage points.", ""),
+         f"recovered {R.projection_gain_points:.1f} percentage points.", ""),
     ])
 
     rich_para(document, [
         ("RQ4, on inference cost. ", "b"),
-        ("Yes, on an estimate. Measured cost is 44.35 ms per item on the "
-         "development host, of which the MobileNetV2 backbone is 92%. Scaled by "
-         "a published single-core ratio, a Raspberry Pi 4 would need roughly 333 "
-         "ms per item, so six slots consume about 0.1% of a thirty-minute "
-         "cycle. The estimate has not been confirmed on hardware.", ""),
+        (f"Yes, on an estimate. Measured cost is {R.stage('total'):.2f} ms per "
+         "item on the development host, of which the MobileNetV2 backbone is "
+         f"{R.pct(R.pipe['stages_ms']['backbone']['share_of_total'], 0)}. Scaled "
+         f"by the Geekbench 6 single-core ratio of {R.pi_factor:.1f}, a Raspberry "
+         f"Pi 4 would need roughly {R.pi_ms:.0f} ms per item, so six slots "
+         f"consume about {R.pct(R.duty, 1)} of a thirty-minute cycle. The "
+         "estimate has not been confirmed on hardware.", ""),
     ])
 
     heading(document, "Contributions", 2)
 
     reset_numbering()
     numbered(document,
-             "A complete, reproducible prototype: 5,472 lines of Python across "
-             "a physical spoilage model, a hardware abstraction layer with real "
-             "and simulated backends, a machine learning pipeline, a REST API, "
-             "a database and a single-page interface, with 119 automated tests "
-             "and a single command that regenerates every figure from raw data.")
+             f"A complete, reproducible prototype: {R.n(R.loc)} lines of Python "
+             "across a physical spoilage model, a hardware abstraction layer "
+             "with real and simulated backends, a machine learning pipeline, a "
+             "REST API, a database and a single-page interface, with "
+             f"{R.tests} automated tests and a single command that regenerates "
+             "every figure and every number in this document from raw data.")
     numbered(document,
              "A calibrated, falsifiable spoilage model implementing established "
              "predictive microbiology, with a test suite that fails if any "
@@ -84,8 +93,8 @@ def build(document) -> None:
     numbered(document,
              "A dataset audit method that finds near-duplicate leakage which "
              "hash-based checking misses entirely, together with the finding "
-             "that 27% of a widely available corpus's test split sat within "
-             "cosine 0.95 of a training image.")
+             f"that {R.pct(R.naive_leak, 0)} of a widely available corpus's "
+             "test split sat within cosine 0.95 of a training image.")
     numbered(document,
              "An honest modality ablation, including the negative result and an "
              "analysis of why simulated sensor data biases such comparisons "
@@ -172,7 +181,7 @@ def build(document) -> None:
          "figures. It was finding out which of them mean anything.")
 
     para(document,
-         "A 99.7% validation score prompted an audit that found real leakage, "
+         f"A {R.pct(R.naive_best_val) if R.naive_best_val else '99.7%'} validation score prompted an audit that found real leakage, "
          "and correcting it barely moved the number — which revealed that the "
          "task was easy rather than that the model was good. A fusion "
          "architecture built on the assumption that combining modalities helps "
@@ -339,6 +348,10 @@ def build(document) -> None:
         "ZWIETERING, M. H., JONGENBURGER, I., ROMBOUTS, F. M. and VAN 'T RIET, "
         "K., 1990. Modeling of the Bacterial Growth Curve. Applied and "
         "Environmental Microbiology, 56(6), pp. 1875-1881.",
+
+        "TAOUKIS, P. S. and LABUZA, T. P., 1989. Applicability of "
+        "Time-Temperature Indicators as Shelf Life Monitors of Food Products. "
+        "Journal of Food Science, 54(4), pp. 783-788.",
     ]
     for reference in sorted(references):
         paragraph = para(document, reference, space_after=8)
@@ -351,6 +364,12 @@ def build(document) -> None:
     heading(document, "Software and data sources", 2)
 
     for entry in [
+        "CALIFA URQUIZA, M. A., 2019. MQSensorsLib: Arduino library for MQ "
+        "series gas sensors, with sensitivity-curve coefficients digitised from "
+        "the manufacturer datasheets. Available at: "
+        "https://github.com/miguel5612/MQSensorsLib",
+        "PRIMATE LABS, 2026. Geekbench 6 CPU Benchmark Chart. Available at: "
+        "https://browser.geekbench.com/v6/cpu [retrieved September 2026].",
         "PROJECT-AGML, 2024. fresh_rotten_fruit_classification. HuggingFace "
         "Datasets. Licensed CC-BY-4.0. Available at: "
         "https://huggingface.co/datasets/Project-AgML/fresh_rotten_fruit_classification",
@@ -436,7 +455,8 @@ def build(document) -> None:
     unnumbered_heading(document, "Appendix A: Source code", 2)
 
     para(document,
-         "The complete implementation is 5,472 lines of Python across 73 files. "
+         f"The complete implementation is {R.n(R.loc)} lines of Python across "
+         f"{R.files} tracked files. "
          "The modules reproduced here are the ones a reader would need to check "
          "the claims in Chapters 4 and 5. Everything else, including the test "
          "suite, the training scripts and the interface, is in the repository.")
@@ -510,7 +530,7 @@ def build(document) -> None:
 │   ├── benchmark_pipeline.py    end-to-end inference cost
 │   ├── seed_demo.py             accelerated demonstration run
 │   └── run_server.py            start the web interface
-├── tests/                       119 tests across 6 modules
+├── tests/                       automated tests (count in results/test_metrics.json)
 ├── docs/figures/                every figure used in this thesis
 ├── results/                     machine-readable metrics per stage
 ├── Makefile                     make all reruns the whole pipeline
@@ -538,7 +558,7 @@ make evaluate         # test-set metrics and confusion matrices
 make tflite bench     # edge conversion and inference profiling
 make diagrams         # regenerate every schematic and analysis figure
 make demo serve       # seed the demonstration and start the interface
-make test coverage    # 119 tests with a coverage report
+make test coverage    # the full suite with a coverage report
 
 make all              # everything above, about 40 minutes''',
                "Listing C.1",

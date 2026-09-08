@@ -39,25 +39,25 @@
     "train": {
       "n": 8643,
       "class_counts": {
-        "fresh": 2969,
-        "marginal": 3173,
-        "spoiled": 2501
+        "fresh": 2964,
+        "marginal": 3152,
+        "spoiled": 2527
       }
     },
     "val": {
       "n": 1855,
       "class_counts": {
-        "fresh": 654,
-        "marginal": 638,
-        "spoiled": 563
+        "fresh": 644,
+        "marginal": 675,
+        "spoiled": 536
       }
     },
     "test": {
       "n": 1837,
       "class_counts": {
-        "fresh": 634,
-        "marginal": 669,
-        "spoiled": 534
+        "fresh": 614,
+        "marginal": 686,
+        "spoiled": 537
       }
     }
   },

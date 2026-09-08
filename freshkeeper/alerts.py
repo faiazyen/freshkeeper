@@ -170,10 +170,20 @@ def evaluate_item(
 
     age_days = (now - _aware(item.added_at)).total_seconds() / 86400.0
     if age_days >= STALE_AFTER_DAYS and not spoiled_now:
-        # Fires once a week rather than every cycle after day seven.
-        if int(age_days) % int(STALE_AFTER_DAYS) == 0 and (
-                previous is None
-                or (now - _aware(previous.predicted_at)).total_seconds() < 86400):
+        # Fire once when the item crosses each seven-day boundary, and not
+        # again until the next one. The first version tested
+        # int(age_days) % 7 == 0, which is true for the whole of day seven --
+        # on a thirty-minute cycle that is forty-eight reminders in a day, the
+        # exact fatigue failure this module exists to prevent. Comparing the
+        # week index of this cycle with the previous one fires exactly once.
+        this_week = int(age_days // STALE_AFTER_DAYS)
+        if previous is None:
+            crossed = True
+        else:
+            prev_age = (_aware(previous.predicted_at)
+                        - _aware(item.added_at)).total_seconds() / 86400.0
+            crossed = int(prev_age // STALE_AFTER_DAYS) < this_week
+        if crossed:
             return Alert(
                 item_id=item.id, item_name=item.name,
                 alert_type=AlertType.STALE_ITEM,

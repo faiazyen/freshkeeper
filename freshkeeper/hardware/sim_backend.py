@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import math
 import random
+import zlib
 from dataclasses import dataclass, field
 
 from .base import SensorBackend, SensorSample, utcnow
@@ -192,6 +193,7 @@ class SimulatedSensorBackend(SensorBackend):
         self.slot_count = slot_count
         self.interval_hours = interval_hours
         self.step_hours = time_acceleration or interval_hours
+        self.seed = seed
         self.rng = random.Random(seed)
         self.fridge = fridge or FridgeThermalModel()
         self.elapsed_hours = 0.0
@@ -234,8 +236,13 @@ class SimulatedSensorBackend(SensorBackend):
         """Integrate every item forward over the conditions it has seen."""
         for item in self.items.values():
             total_hours = item.age_hours_at_start + self.elapsed_hours
-            temps, rh = self.fridge.series(total_hours, self.interval_hours, random.Random(
-                hash((item.slot_id, item.fruit_type)) & 0xFFFF))
+            # Per-item seed derived with crc32, not hash(): Python salts str
+            # hashes per process, so hash() made every run differ despite the
+            # documented seed. The audit that found this is in tests/.
+            item_seed = (self.seed * 1_000_003 + item.slot_id * 7_919
+                         + zlib.crc32(item.fruit_type.encode())) & 0x7FFF_FFFF
+            temps, rh = self.fridge.series(total_hours, self.interval_hours,
+                                           random.Random(item_seed))
             if not temps:
                 continue
             states = integrate_spoilage(

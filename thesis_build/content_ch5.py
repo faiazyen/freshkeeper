@@ -5,10 +5,13 @@ from docx_builder import (
     rich_para, table,
 )
 
+from results import Results
+
 FIG = "../freshkeeper/docs/figures"
 
 
 def build(document) -> None:
+    R = Results()
     heading(document, "Results and Discussion", 1)
 
     para(document,
@@ -34,20 +37,15 @@ def build(document) -> None:
          "so it is checked first, against the published shelf lives its "
          "coefficients were fitted to.")
 
+    _max_err = max(abs(r["error_percent"]) for r in R.shelf["rows"])
     table(document,
           ["Commodity", "Published (days)", "Model (days)", "Error"],
-          [["Strawberry", "5.0", "5.1", "+1.7%"],
-           ["Banana", "10.0", "10.1", "+0.8%"],
-           ["Grape", "14.0", "14.0", "0.0%"],
-           ["Guava", "14.0", "14.1", "+0.6%"],
-           ["Jujube", "21.0", "21.1", "+0.4%"],
-           ["Orange", "25.0", "25.0", "0.0%"],
-           ["Apple", "30.0", "30.1", "+0.3%"],
-           ["Pomegranate", "60.0", "60.0", "0.0%"]],
+          [[r["commodity"], f"{r['published_days']:.1f}", f"{r['modelled_days']:.1f}",
+            f"{r['error_percent']:+.1f}%"] for r in R.shelf["rows"]],
           "Table 6",
           "Modelled versus published shelf life at 4 °C and 85% relative "
-          "humidity. Agreement is within 1.7% across a range spanning an order "
-          "of magnitude, from five days to sixty.",
+          f"humidity. Agreement is within {_max_err:.1f}% across a range "
+          "spanning an order of magnitude, from five days to sixty.",
           widths=[4.5, 3.5, 3.5, 3.0])
 
     para(document,
@@ -68,9 +66,12 @@ def build(document) -> None:
          "The right-hand panel is the informative one. Storage temperature was "
          "never used in calibration — every coefficient was fitted at 4 °C — yet "
          "the temperature response falls out with the right shape and "
-         "magnitude. Strawberries last 7.0 days at 2 °C and 1.5 days at 15 °C. "
-         "The implied temperature coefficient across a ten-degree interval is "
-         "roughly 3, which sits inside the 2 to 4 range reported for microbial "
+         f"magnitude. Strawberries last {R.shelf['temperature_sweep_days']['strawberry']['2.0']:.1f} "
+         f"days at 2 °C and {R.shelf['temperature_sweep_days']['strawberry']['15.0']:.1f} days at "
+         "15 °C. The implied temperature coefficient across a ten-degree "
+         "interval is roughly "
+         f"{(R.shelf['temperature_sweep_days']['strawberry']['4.0'] / R.shelf['temperature_sweep_days']['strawberry']['15.0']) ** (10 / 11):.0f}, "
+         "which sits inside the 2 to 4 range reported for microbial "
          "spoilage. The model was not tuned to produce that.")
 
     para(document,
@@ -84,7 +85,7 @@ def build(document) -> None:
     rich_para(document, [
         ("RQ1 is answered affirmatively. ", "b"),
         ("A model assembled from the Ratkowsky and Gompertz equations "
-         "reproduces published refrigerated shelf lives to within 1.7% across "
+         f"reproduces published refrigerated shelf lives to within {_max_err:.1f}% across "
          "eight commodities, and extrapolates to temperatures it was not fitted "
          "at with a biologically plausible coefficient.", ""),
     ])
@@ -98,50 +99,50 @@ def build(document) -> None:
 
     table(document,
           ["Metric", "Value"],
-          [["Test accuracy", "0.9799"],
-           ["ROC AUC", "0.9986"],
-           ["Macro F1", "0.9799"],
-           ["Recall, rotten class", "0.9825"],
-           ["Precision, rotten class", "0.9771"],
-           ["Test images", "1,837"]],
+          [["Test accuracy", R.f4(R.visual["accuracy"])],
+           ["ROC AUC", R.f4(R.visual["auc"])],
+           ["Macro F1", R.f4(R.visual["macro_f1"])],
+           ["Recall, rotten class", R.f4(R.visual["rotten_recall"])],
+           ["Precision, rotten class", R.f4(R.visual["rotten_precision"])],
+           ["Test images", R.n(R.visual["n"])]],
           "Table 7",
           "Visual CNN on the held-out, group-aware test split. MobileNetV2 with "
-          "two-stage transfer learning: 22 epochs of head training on cached "
-          "embeddings, then 8 epochs fine-tuning the top 40 backbone layers.",
+          f"two-stage transfer learning: {R.stage1_epochs} epochs of head training "
+          f"on cached embeddings, then {R.stage2_epochs} epochs fine-tuning the top "
+          "40 backbone layers.",
           widths=[7.0, 4.0])
 
     figure(document, f"{FIG}/confusion_visual_cnn.png", "Figure 11",
            "Confusion matrix for binary classification. Errors are close to "
-           "symmetric: 21 fresh items called rotten, 16 rotten called fresh.",
+           f"symmetric: {R.visual['confusion_matrix'][0][1]} fresh items called "
+           f"rotten, {R.visual['confusion_matrix'][1][0]} rotten called fresh.",
            width_cm=9.5)
 
     para(document,
-         "98.0% accuracy with an AUC of 0.9986 is a strong number, and it would "
+         f"{R.pct(R.visual['accuracy'])} accuracy with an AUC of "
+         f"{R.f4(R.visual['auc'])} is a strong number, and it would "
          "be easy to present it as the headline finding. It should not be.")
 
     para(document,
          "Breaking the result down by commodity shows where the difficulty sits.")
 
+    _pc = sorted(R.per_commodity, key=lambda r: -r["accuracy"])
     table(document,
           ["Commodity", "Test images", "Accuracy", "AUC"],
-          [["Banana", "221", "1.0000", "1.0000"],
-           ["Guava", "238", "1.0000", "1.0000"],
-           ["Pomegranate", "238", "0.9958", "0.9999"],
-           ["Jujube", "234", "0.9915", "0.9997"],
-           ["Strawberry", "219", "0.9909", "0.9998"],
-           ["Grape", "230", "0.9696", "0.9983"],
-           ["Apple", "219", "0.9635", "0.9992"],
-           ["Orange", "238", "0.9286", "0.9829"],
-           ["**Overall**", "**1,837**", "**0.9799**", "**0.9986**"]],
+          [[r["commodity"].capitalize(), str(r["n"]), R.f4(r["accuracy"]), R.f4(r["auc"])]
+           for r in _pc]
+          + [["**Overall**", f"**{R.n(R.visual['n'])}**",
+              f"**{R.f4(R.visual['accuracy'])}**", f"**{R.f4(R.visual['auc'])}**"]],
           "Table 8",
-          "Per-commodity binary classification. Bananas and guavas are "
-          "classified perfectly; oranges are hardest.",
+          f"Per-commodity binary classification. {_pc[0]['commodity'].capitalize()} is "
+          f"classified best; {_pc[-1]['commodity']} is hardest.",
           widths=[4.0, 3.4, 3.4, 3.2])
 
     para(document,
-         "Bananas and guavas are separated perfectly, which is unsurprising: a "
-         "rotten banana is black and a fresh one is yellow, and no classifier "
-         "needs subtlety for that. Oranges are hardest at 92.9%, and the "
+         "Bananas and guavas are separated almost perfectly, which is "
+         "unsurprising: a rotten banana is black and a fresh one is yellow, and "
+         "no classifier needs subtlety for that. Oranges are hardest at "
+         f"{R.pct(next(r['accuracy'] for r in _pc if r['commodity'] == 'orange'))}, and the "
          "plausible reason is that citrus spoilage begins as localised mould on "
          "a rind whose colour barely changes, so the global appearance of a "
          "spoiling orange stays closer to a sound one.")
@@ -155,11 +156,14 @@ def build(document) -> None:
     heading(document, "Why this figure demonstrates less than it appears", 3)
 
     para(document,
-         "The first run of this model scored 99.7% on validation, which prompted "
-         "the audit described in Chapter 4. That audit found genuine "
-         "near-duplicate leakage — 27.2% of test images within cosine 0.95 of a "
-         "training image — and eliminating it produced a split with 0.00% "
-         "residual leakage. The retrained model then scored 99.5%.")
+         "The first run of this model, on the naive split, scored "
+         f"{R.pct(R.naive_best_val) if R.naive_best_val else 'about 99.7%'} on "
+         "validation, which prompted the audit described in Chapter 4. That "
+         f"audit found genuine near-duplicate leakage — {R.pct(R.naive_leak)} "
+         "of test images within cosine 0.95 of a training image — and "
+         "eliminating it produced a split with "
+         f"{R.pct(R.audit['residual_test_leakage_fraction'], 2)} residual "
+         f"leakage. The retrained model then scored {R.pct(R.stage2_best_val)}.")
 
     para(document,
          "Leakage was not the explanation. The task is simply easy, and the "
@@ -179,7 +183,7 @@ def build(document) -> None:
 
     rich_para(document, [
         ("RQ2, both halves. ", "b"),
-        ("Transfer-learned MobileNetV2 reaches 98.0% accuracy distinguishing "
+        (f"Transfer-learned MobileNetV2 reaches {R.pct(R.visual['accuracy'])} accuracy distinguishing "
          "fresh from rotten on real photographs. That figure demonstrates "
          "competent visual classification and does not demonstrate early "
          "spoilage detection, because the intermediate state the system is "
@@ -202,21 +206,29 @@ def build(document) -> None:
          "sensor-only, fusion with raw concatenation, and fusion with the "
          "projected visual embedding.")
 
+    _models = [("Vision only", "vision_only"), ("Sensor only", "sensor_only"),
+               ("Fusion, raw concatenation", "fusion_raw"),
+               ("Fusion, projected embedding", "fusion")]
+    def _cell(model, key):
+        value = R.ev[model][key]
+        best = max(R.ev[m][key] for _, m in _models)
+        return f"**{R.f4(value)}**" if value == best else R.f4(value)
     table(document,
           ["Model", "Accuracy", "Macro F1", "Recall (spoiled)", "Precision (spoiled)"],
-          [["Vision only", "0.6184", "0.5463", "0.9569", "0.6741"],
-           ["Sensor only", "**0.9690**", "**0.9693**", "**0.9831**", "0.9633"],
-           ["Fusion, raw concatenation", "0.9434", "0.9437", "0.9532", "0.9288"],
-           ["Fusion, projected embedding", "0.9603", "0.9605", "0.9569", "**0.9660**"]],
+          [[label, _cell(m, "accuracy"), _cell(m, "macro_f1"),
+            _cell(m, "spoiled_recall"), _cell(m, "spoiled_precision")]
+           for label, m in _models],
           "Table 8",
-          "Modality ablation on the held-out test split, 1,837 samples. All "
+          "Modality ablation on the held-out test split, "
+          f"{R.n(sum(R.ev['sensor_only']['per_class'][c]['support'] for c in ('fresh','marginal','spoiled')))} "
+          "samples. All "
           "figures depend on simulated sensor features and are bounded by the "
           "discussion below.",
           widths=[5.4, 2.6, 2.6, 3.2, 3.2])
 
     figure(document, f"{FIG}/ablation.png", "Figure 12",
-           "The ablation. Sensor-only leads on every metric, which the design "
-           "did not predict.", width_cm=14.5)
+           "The ablation. Sensor-only leads on accuracy and macro F1, which the "
+           "design did not predict.", width_cm=14.5)
 
     figure(document, f"{FIG}/training_curves.png", "Figure 13",
            "Validation accuracy and loss. Vision-only plateaus early at its "
@@ -227,14 +239,15 @@ def build(document) -> None:
          "Per-class figures for the two strongest models show where each spends "
          "its errors.")
 
+    _rows = []
+    for label, m in (("Sensor only", "sensor_only"), ("Fusion", "fusion")):
+        for i, cls in enumerate(("fresh", "marginal", "spoiled")):
+            pc = R.ev[m]["per_class"][cls]
+            _rows.append([label if i == 0 else "", cls.capitalize(), R.f4(pc["precision"]),
+                          R.f4(pc["recall"]), R.f4(pc["f1"]), str(pc["support"])])
     table(document,
           ["Model", "Class", "Precision", "Recall", "F1", "Support"],
-          [["Sensor only", "Fresh", "0.9647", "0.9921", "0.9782", "634"],
-           ["", "Marginal", "0.9781", "0.9357", "0.9564", "669"],
-           ["", "Spoiled", "0.9633", "0.9831", "0.9731", "534"],
-           ["Fusion", "Fresh", "0.9616", "0.9890", "0.9751", "634"],
-           ["", "Marginal", "0.9543", "0.9357", "0.9449", "669"],
-           ["", "Spoiled", "0.9660", "0.9569", "0.9614", "534"]],
+          _rows,
           "Table 10",
           "Per-class metrics for the sensor-only and projected-fusion models on "
           "the test split. Both lose most of their accuracy on the marginal "
@@ -243,7 +256,9 @@ def build(document) -> None:
 
     para(document,
          "Recall on the marginal class is the weak point for both models at "
-         "93.6%, and that is expected: marginal is defined by two thresholds cut "
+         f"{R.pct(R.per_class('sensor_only','marginal','recall'))} and "
+         f"{R.pct(R.per_class('fusion','marginal','recall'))}, and that is "
+         "expected: marginal is defined by two thresholds cut "
          "through a continuous quantity, so items sitting near 0.35 or 0.70 are "
          "genuinely ambiguous rather than misclassified in any meaningful "
          "sense.")
@@ -251,12 +266,15 @@ def build(document) -> None:
     heading(document, "Vision-only confirms the design as intended", 3)
 
     para(document,
-         "61.8% accuracy is poor, and it is supposed to be. The corpus pairing "
-         "gives marginal items images drawn from both the fresh and rotten pool, "
-         "so a vision-only model cannot separate marginal from fresh even in "
-         "principle. Its confusion matrix shows precisely that failure: of 669 "
-         "marginal items it labels 378 as fresh and 242 as spoiled, getting 49 "
-         "right. It has effectively learned the binary task and is guessing at "
+         f"{R.pct(R.acc('vision_only'))} accuracy is poor, and it is supposed "
+         "to be. The corpus pairing gives marginal items images drawn from both "
+         "the fresh and rotten pool, so a vision-only model cannot separate "
+         "marginal from fresh even in principle. Its confusion matrix shows "
+         f"precisely that failure: of {sum(R.cm('vision_only')[1])} marginal "
+         f"items it labels {R.cm('vision_only')[1][0]} as fresh and "
+         f"{R.cm('vision_only')[1][2]} as spoiled, getting "
+         f"{R.cm('vision_only')[1][1]} right. It has effectively learned the "
+         "binary task and is guessing at "
          "the middle class.")
 
     para(document,
@@ -268,8 +286,9 @@ def build(document) -> None:
 
     para(document,
          "The design assumption was that combining modalities would beat either "
-         "alone. It did not. Sensor-only reaches 96.9%; the best fusion variant "
-         "reaches 96.0%. Adding the visual branch cost 0.9 percentage points.")
+         f"alone. It did not. Sensor-only reaches {R.pct(R.acc('sensor_only'))}; "
+         f"the best fusion variant reaches {R.pct(R.acc('fusion'))}. Adding the "
+         f"visual branch cost {R.fusion_gap_points:.1f} percentage points.")
 
     para(document,
          "The cause is structural rather than a training accident, and it is "
@@ -302,9 +321,10 @@ def build(document) -> None:
 
     para(document,
          "The two fusion variants differ only in how the visual embedding enters "
-         "the join, and the difference is 1.7 percentage points of accuracy — "
-         "94.3% for raw concatenation against 96.0% with the embedding projected "
-         "to 64 dimensions first.")
+         f"the join, and the difference is {R.projection_gain_points:.1f} "
+         f"percentage points of accuracy — {R.pct(R.acc('fusion_raw'))} for raw "
+         f"concatenation against {R.pct(R.acc('fusion'))} with the embedding "
+         "projected to 64 dimensions first.")
 
     para(document,
          "Concatenating 1280 visual dimensions with 32 sensor dimensions gives "
@@ -324,7 +344,8 @@ def build(document) -> None:
     rich_para(document, [
         ("RQ3 is answered negatively. ", "b"),
         ("Under this simulation, late fusion does not outperform the "
-         "sensor-only baseline: 96.0% against 96.9%. Branch width at the join "
+         f"sensor-only baseline: {R.pct(R.acc('fusion'))} against "
+         f"{R.pct(R.acc('sensor_only'))}. Branch width at the join "
          "materially affects the result. The negative finding is attributable "
          "to the simulation sharing a generative model between features and "
          "labels, and resolving the question properly requires instrumented "
@@ -339,8 +360,12 @@ def build(document) -> None:
            "into discrete classes.", width_cm=10.5)
 
     para(document,
-         "The error pattern is reassuring. No spoiled item is classified as "
-         "fresh and no fresh item as spoiled; every error is a boundary case "
+         "The error pattern is reassuring. "
+         + ("No spoiled item is classified as fresh and no fresh item as spoiled; "
+            if R.cm('sensor_only')[0][2] == 0 and R.cm('sensor_only')[2][0] == 0
+            else f"{R.cm('sensor_only')[2][0]} spoiled items are classified as fresh and "
+                 f"{R.cm('sensor_only')[0][2]} fresh as spoiled; otherwise ")
+         + "every error is a boundary case "
          "involving the marginal class. That is the expected consequence of "
          "thresholding a continuous quantity, and it is the least costly error "
          "type: mistaking marginal for fresh delays an alert by one cycle, while "
@@ -348,14 +373,16 @@ def build(document) -> None:
          "in the test set at all.")
 
     para(document,
-         "Recall on the spoiled class is 98.3% for sensor-only, the metric that "
+         f"Recall on the spoiled class is {R.pct(R.spoiled_recall('sensor_only'))} for sensor-only, the metric that "
          "matters most because a missed spoiled item is the failure with a "
          "health consequence.")
 
     figure(document, f"{FIG}/confusion_vision_only.png", "Figure",
-           "Vision-only confusion matrix. Of 669 marginal items it assigns 378 "
-           "to fresh and 242 to spoiled, getting 49 right — the failure the "
-           "corpus construction makes inevitable.", width_cm=10.5)
+           f"Vision-only confusion matrix. Of {sum(R.cm('vision_only')[1])} "
+           f"marginal items it assigns {R.cm('vision_only')[1][0]} to fresh and "
+           f"{R.cm('vision_only')[1][2]} to spoiled, getting "
+           f"{R.cm('vision_only')[1][1]} right — the failure the corpus "
+           "construction makes inevitable.", width_cm=10.5)
 
     figure(document, f"{FIG}/confusion_fusion.png", "Figure",
            "Projected-fusion confusion matrix. The error structure resembles "
@@ -365,8 +392,8 @@ def build(document) -> None:
     para(document,
          "Setting the three matrices side by side makes the ablation concrete. "
          "Vision-only fails on one specific class for a structural reason. "
-         "Sensor-only and fusion both concentrate their errors on the same two "
-         "boundaries, and fusion simply makes a few more of them.")
+         "Sensor-only and fusion both concentrate their errors on the same "
+         "boundaries; the difference between them is a handful of cases.")
 
     # ==================================================================
     heading(document, "Inference cost", 2)
@@ -375,13 +402,18 @@ def build(document) -> None:
          "Cost was profiled per stage rather than end to end, so the expensive "
          "part is identifiable.")
 
+    _st = R.pipe["stages_ms"]
+    def _srow(label, key, bold=False):
+        w = (lambda x: f"**{x}**") if bold else (lambda x: x)
+        return [w(label), w(f"{_st[key]['mean']:.2f}"), w(f"{_st[key]['median']:.2f}"),
+                w(f"{_st[key]['p95']:.2f}"), "" if bold else f"{100*_st[key]['share_of_total']:.1f}%"]
     table(document,
           ["Stage", "Mean (ms)", "Median (ms)", "p95 (ms)", "Share"],
-          [["JPEG decode and resize", "0.92", "0.87", "1.05", "2.1%"],
-           ["Preprocessing", "0.14", "0.14", "0.16", "0.3%"],
-           ["MobileNetV2 backbone", "40.83", "40.80", "41.23", "92.1%"],
-           ["Fusion head", "2.47", "2.46", "2.51", "5.6%"],
-           ["**Total per item**", "**44.35**", "**44.31**", "**44.90**", ""]],
+          [_srow("JPEG decode and resize", "decode_resize"),
+           _srow("Preprocessing", "preprocess"),
+           _srow("MobileNetV2 backbone", "backbone"),
+           _srow("Fusion head", "fusion_head"),
+           _srow("Total per item", "total", bold=True)],
           "Table 9",
           "End-to-end inference cost per item, measured on the development host "
           "(Apple silicon, TensorFlow 2.21), 60 runs after 10 warm-up "
@@ -389,36 +421,42 @@ def build(document) -> None:
           widths=[5.4, 2.6, 2.8, 2.4, 2.2])
 
     para(document,
-         "The backbone accounts for 92% of the cost. Everything else together — "
+         f"The backbone accounts for {R.pct(_st['backbone']['share_of_total'], 0)} of the cost. Everything else together — "
          "decoding, preprocessing and the entire fusion head — is under 4 "
          "milliseconds. Any optimisation effort belongs on the backbone or on "
          "avoiding it, which is one more practical argument for the sensor-only "
          "path: it skips the expensive stage entirely.")
 
     para(document,
-         "Scaling by an assumed 7.5× single-core slowdown gives roughly 333 ms "
-         "per item on a Raspberry Pi 4. Six slots then take about 2 seconds of a "
-         "thirty-minute cycle, a duty cycle of 0.11%. Even if that scaling "
-         "factor is wrong by a factor of three, the conclusion is unchanged.")
+         f"Scaling by a {R.pi_factor:.1f}× single-core slowdown — the ratio of "
+         "Geekbench 6 single-core medians for the Apple M1 host and the "
+         f"Raspberry Pi 4 (Primate Labs, 2026) — gives roughly {R.pi_ms:.0f} ms "
+         f"per item on a Pi 4. Six slots then take about {6*R.pi_ms/1000:.1f} "
+         f"seconds of a thirty-minute cycle, a duty cycle of {R.pct(R.duty, 2)}. "
+         "Even if that scaling factor is wrong by a factor of three, the "
+         "conclusion is unchanged.")
 
     rich_para(document, [
         ("This is an estimate, not a measurement. ", "b"),
-        ("It is derived from a host measurement and a published ratio, and no "
+        ("It is derived from a host measurement and a public benchmark ratio, and no "
          "code in this thesis has been timed on Raspberry Pi hardware.", ""),
     ])
 
     table(document,
           ["Variant", "Size (MB)", "Mean latency (ms)", "Test accuracy"],
-          [["Keras, fusion", "1.778", "—", "0.9603"],
-           ["TFLite float32", "0.575", "0.011", "0.9603"],
-           ["TFLite float16", "0.292", "0.010", "0.9603"],
-           ["TFLite int8", "0.163", "0.006", "0.9565"],
-           ["TFLite int8, sensor-only", "0.013", "0.002", "0.9684"]],
+          [["Keras, fusion", f"{R.keras_mb('fusion'):.3f}", "—", R.f4(R.acc("fusion"))]]
+          + [[f"TFLite {v}", f"{R.tfl('fusion', v, 'megabytes'):.3f}",
+              f"{R.tfl('fusion', v, 'mean_ms'):.3f}", R.f4(R.tfl('fusion', v, 'test_accuracy'))]
+             for v in ("float32", "float16", "int8")]
+          + [["TFLite int8, sensor-only", f"{R.tfl('sensor_only','int8','megabytes'):.3f}",
+              f"{R.tfl('sensor_only','int8','mean_ms'):.3f}",
+              R.f4(R.tfl('sensor_only','int8','test_accuracy'))]],
           "Table 10",
           "TensorFlow Lite conversion. Latency is for the head alone, excluding "
           "the backbone, which is why the figures are microseconds. Float16 "
-          "halves size at no accuracy cost; int8 gives an eleven-fold reduction "
-          "for 0.4 points of accuracy.",
+          "halves size at no accuracy cost; int8 gives a "
+          f"{R.keras_mb('fusion') / R.tfl('fusion','int8','megabytes'):.0f}-fold reduction "
+          f"for {100*(R.acc('fusion') - R.tfl('fusion','int8','test_accuracy')):.1f} points of accuracy.",
           widths=[5.4, 2.8, 3.4, 3.0])
 
     para(document,
@@ -428,7 +466,7 @@ def build(document) -> None:
 
     rich_para(document, [
         ("RQ4 is answered affirmatively, with a caveat. ", "b"),
-        ("Estimated inference cost uses about 0.1% of the measurement cycle on "
+        (f"Estimated inference cost uses about {R.pct(R.duty, 1)} of the measurement cycle on "
          "a Raspberry Pi 4, leaving very large headroom. The estimate has not "
          "been confirmed on hardware.", ""),
     ])
@@ -439,28 +477,16 @@ def build(document) -> None:
     para(document,
          "The complete system was exercised by running the real acquisition and "
          "inference path against the simulated backend with time compressed: "
-         "six slots, twelve simulated hours per cycle, twenty-four cycles.")
+         f"six slots, {R.demo['hours_per_cycle']:.0f} simulated hours per cycle, "
+         f"{R.demo['cycles']} cycles.")
 
     table(document,
-          ["Simulated day", "Strawberry", "Banana", "Grape", "Guava", "Orange",
-           "Pomegranate"],
-          [["0.5", "fresh 100", "fresh 100", "fresh 100", "fresh 100",
-            "fresh 100", "fresh 100"],
-           ["2.5", "marginal 50", "fresh 100", "fresh 100", "fresh 100",
-            "fresh 100", "fresh 100"],
-           ["5.0", "spoiled 0", "marginal 50", "fresh 96", "fresh 99",
-            "fresh 100", "fresh 100"],
-           ["7.5", "spoiled 0", "marginal 50", "marginal 50", "marginal 50",
-            "fresh 100", "fresh 100"],
-           ["10.0", "spoiled 0", "spoiled 0", "marginal 50", "marginal 50",
-            "fresh 100", "fresh 100"],
-           ["12.0", "spoiled 0", "spoiled 0", "spoiled 16", "spoiled 18",
-            "marginal 62", "fresh 100"]],
+          ["Simulated day"] + [s["commodity"].capitalize() for s in R.demo["shelf"]],
+          R.demo_rows(),
           "Table 11",
-          "State and freshness score across an accelerated twelve-day run. The "
-          "commodities fail in the order their published shelf lives predict, "
-          "and the pomegranate is still fresh when the strawberry has been "
-          "spoiled for a week.",
+          f"State and freshness score across an accelerated {R.demo_days:.0f}-day "
+          "run, read from the run's log. The commodities fail in the order "
+          "their published shelf lives predict.",
           widths=[2.6, 2.6, 2.4, 2.4, 2.4, 2.4, 2.6], font_size=8.0)
 
     para(document,
@@ -477,7 +503,7 @@ def build(document) -> None:
 
     para(document,
          "Alert behaviour worked as designed. Across the run the system raised "
-         "one alert at the moment of a transition into the spoiled state, and "
+         "alerts only at transitions into a new state, and "
          "stayed silent while items remained in a state they had already "
          "reported. Without transition-triggered alerting the same run would "
          "have produced dozens of notifications about the same strawberry.")
@@ -504,8 +530,8 @@ def build(document) -> None:
              "system.")
     numbered(document,
              "Transfer-learned MobileNetV2 classifies fresh from rotten "
-             "produce at 98.0% on a leakage-controlled split of real "
-             "photographs.")
+             f"produce at {R.pct(R.visual['accuracy'])} on a leakage-controlled "
+             "split of real photographs.")
     numbered(document,
              "Public fresh-versus-rotten corpora contain the easy cases and "
              "omit the intermediate state that matters, so accuracies measured "
@@ -513,7 +539,7 @@ def build(document) -> None:
              "system would achieve.")
     numbered(document,
              "Near-duplicate leakage can be invisible to hash-based duplicate "
-             "detection while affecting 27% of a test set, and an "
+             f"detection while affecting {R.pct(R.naive_leak, 0)} of a test set, and an "
              "embedding-space audit finds it cheaply.")
 
     heading(document, "What it does not establish", 3)
@@ -544,7 +570,7 @@ def build(document) -> None:
          "thesis.")
 
     para(document,
-         "Reporting only the fusion accuracy would have been easy. 96.0% on a "
+         f"Reporting only the fusion accuracy would have been easy. {R.pct(R.acc('fusion'))} on a "
          "three-class problem reads well, sits comfortably beside the "
          "literature in Table 1, and nobody would have asked what the baselines "
          "were — because, as Chapter 3 notes, most published work does not "
@@ -604,7 +630,7 @@ def build(document) -> None:
     heading(document, "On engineering defects and where they hid", 3)
 
     para(document,
-         "Four bugs in this work produced plausible output while being wrong, "
+         "Five bugs in this work produced plausible output while being wrong, "
          "and the pattern is worth recording.")
 
     para(document,
@@ -613,11 +639,16 @@ def build(document) -> None:
          "exposed it. The MQ direction error silently zeroed the ethanol channel "
          "above the low tens of ppm; the readings looked like a quiet sensor "
          "rather than a broken conversion. Double preprocessing trained the "
-         "visual model to exactly chance while stage one had reached 97.8%, and "
+         f"visual model to exactly chance while stage one had reached {R.pct(R.stage1_final_val)}, and "
          "the loss curve was smooth throughout. Registering a 250 g punnet "
          "against an 18 g simulated berry produced a mass delta far outside the "
          "training distribution, and every item read as spoiled — a result that "
-         "looked like a working spoilage detector being pessimistic.")
+         "looked like a working spoilage detector being pessimistic. And "
+         "per-item randomness seeded from Python's hash() of a string — which "
+         "the interpreter salts differently in every process — meant the "
+         "sensor corpus changed on every run while the documentation promised "
+         "exact reproducibility; the numbers were always plausible, just never "
+         "the same twice.")
 
     para(document,
          "None was caught by inspection. Each was caught by comparing against "
@@ -686,7 +717,7 @@ def build(document) -> None:
 
     para(document,
          "Collapsing to a binary safe-or-not decision at the 0.70 boundary would "
-         "therefore give a considerably higher accuracy than 96.9%, because "
+         f"therefore give a considerably higher accuracy than {R.pct(R.acc('sensor_only'))}, because "
          "every fresh-marginal confusion disappears. That number is not reported "
          "as a result, because choosing the threshold after seeing the errors is "
          "how accuracy figures get inflated, and this thesis has already spent a "
@@ -700,7 +731,7 @@ def build(document) -> None:
          "because a reader will make it anyway. Each study measured a different "
          "class definition on a different private corpus of unknown difficulty. "
          "A 92% on a hard three-class problem with genuinely ambiguous cases "
-         "beats a 98% on a corpus of obviously-rotten fruit, and nothing in the "
+         f"beats a {R.pct(R.visual['accuracy'], 0)} on a corpus of obviously-rotten fruit, and nothing in the "
          "published metadata lets anyone tell which is which.")
 
     para(document,

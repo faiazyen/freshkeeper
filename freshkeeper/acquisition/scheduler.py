@@ -17,6 +17,8 @@ import logging
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from ..db.maintenance import purge_expired
+
 logger = logging.getLogger(__name__)
 
 DEFAULT_INTERVAL_MINUTES = 30
@@ -33,6 +35,9 @@ class AcquisitionScheduler:
             result = self.service.run_cycle()
             logger.info("cycle complete: %d slots, %d items",
                         result["slots"], len(result["items"]))
+            removed = purge_expired(self.service.session_factory)
+            if any(removed.values()):
+                logger.info("retention purge: %s", removed)
         except Exception:
             # A failed cycle must not kill the scheduler thread. A sensor that
             # throws once every few days is normal; a monitoring system that

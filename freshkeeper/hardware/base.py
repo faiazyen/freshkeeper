@@ -74,6 +74,9 @@ class SensorBackend(abc.ABC):
 
     #: Number of physically addressable slots on the monitored shelf.
     slot_count: int = 6
+    #: Privacy switch. When False, capture_image() must return None without
+    #: exposing the sensor; the service then runs sensor-only.
+    camera_enabled: bool = True
 
     @abc.abstractmethod
     def warm_up(self) -> None:

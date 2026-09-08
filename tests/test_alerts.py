@@ -130,6 +130,34 @@ class TestAlertGeneration:
             NOW)
         assert alert is not None and alert.alert_type is AlertType.STALE_ITEM
 
+    def test_stale_reminder_fires_once_per_week_not_once_per_cycle(self):
+        # Two cycles thirty minutes apart, both on day 7: the first crosses the
+        # boundary and fires, the second must stay silent. The original
+        # implementation fired on every cycle of day 7, 14, 21...
+        added = NOW - timedelta(days=7, hours=8)
+        item = make_item(added_at=added)
+        earlier = make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH,
+                                  NOW - timedelta(minutes=30))
+        first = evaluate_item(
+            item, make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH,
+                                  NOW - timedelta(minutes=30)),
+            make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH,
+                            NOW - timedelta(days=1, hours=8)),
+            NOW - timedelta(minutes=30))
+        assert first is not None and first.alert_type is AlertType.STALE_ITEM
+        second = evaluate_item(
+            item, make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH), earlier, NOW)
+        assert second is None
+
+    def test_stale_reminder_repeats_at_the_next_week_boundary(self):
+        item = make_item(added_at=NOW - timedelta(days=14, minutes=10))
+        alert = evaluate_item(
+            item, make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH),
+            make_prediction(0.85, 0.12, 0.03, SpoilageState.FRESH,
+                            NOW - timedelta(minutes=30)),
+            NOW)
+        assert alert is not None and alert.alert_type is AlertType.STALE_ITEM
+
     def test_first_ever_prediction_can_alert(self):
         alert = evaluate_item(
             make_item(),

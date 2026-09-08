@@ -3,9 +3,11 @@
 from docx_builder import (
     bullet, figure, heading, numbered, para, reset_numbering, rich_para, table,
 )
+from results import Results
 
 
 def build(document) -> None:
+    R = Results()
     heading(document, "Literature Review", 1)
 
     para(document,
@@ -111,28 +113,43 @@ def build(document) -> None:
 
     para(document,
          "Food monitoring systems generally adopt that structure. Ahmadzadeh et "
-         "al. (2023), in a review of IoT and big-data approaches to food waste "
-         "reduction, catalogue applications across the supply chain and note "
-         "that consumer-stage deployments are the least represented, despite "
-         "being where the largest share of waste occurs. The imbalance is "
-         "understandable: a supermarket has an operator with a budget and a "
-         "measurable return, whereas a household has neither.")
+         "al. (2023) review IoT and big-data food waste management models, "
+         "algorithms and technologies across every stage from agricultural "
+         "production through post-harvest handling, processing and "
+         "distribution to consumption, and set out the open challenges. It is "
+         "a review rather than a prototype, and it reports no hardware or "
+         "accuracy figures of its own. Reading the works it surveys, the "
+         "consumer stage appears far less often than retail and supply-chain "
+         "applications — an observation of this author's, not a claim the "
+         "review makes — and the imbalance is understandable: a supermarket "
+         "has an operator with a budget and a measurable return, whereas a "
+         "household has neither.")
 
     para(document,
-         "Nemade et al. (2024) describe a three-layer IoT architecture for food "
-         "quality monitoring in smart homes, combining a perception layer, an "
-         "MQTT-based network layer and a web application layer, and compare "
-         "several classifiers on the resulting data. Their architectural "
-         "decomposition is the one adopted in Chapter 4, with one deliberate "
-         "departure discussed below.")
+         "Sonwani et al. (2022) built an Arduino-based prototype with gas, "
+         "humidity and temperature sensors, a camera, a Peltier cooling module "
+         "and a humidifier, so the system both monitors and actively regulates "
+         "the storage environment. An eleven-layer convolutional network "
+         "trained on Fruits-360 identifies the type of fruit or vegetable with "
+         "95% accuracy; spoilage itself is inferred from the gas, humidity and "
+         "temperature readings, not from the image. They tested fifteen of "
+         "fifty catalogued produce types and report extending the usable life "
+         "of some categories by around two days, with alerts pushed to the "
+         "user's phone. Two things carry over to this thesis: the division of "
+         "labour, with vision used for identification and the sensor channel "
+         "for condition, and the use of Fruits-360 for exactly what it "
+         "contains, which is fruit types rather than freshness states.")
 
     para(document,
-         "Sonwani et al. (2022) present an artificial-intelligence approach to "
-         "food spoilage detection and analysis using gas sensing, demonstrating "
-         "that volatile compound concentrations track spoilage progression "
-         "closely enough to be useful for detection. Their work is one of the "
-         "clearer demonstrations that the gas channel carries real signal rather "
-         "than merely correlating with time.")
+         "Nemade et al. (2024) used a NodeMCU microcontroller with MQ2 and MQ4 "
+         "methane sensors and a DHT11 temperature and humidity sensor, and a "
+         "Random Forest classifier with recursive feature elimination and "
+         "M-SMOTE rebalancing, reaching 94.76% accuracy on cooked foods — rice, "
+         "bread, samosas and dal — while also predicting remaining shelf life. "
+         "There is no camera and no load cell. Their result is worth holding in "
+         "mind when reading Chapter 5: a gas-plus-environment classifier with "
+         "no visual channel performed well on their data, and the same pattern "
+         "appears in this thesis's ablation.")
 
     heading(document, "Cloud, edge, or both", 3)
 
@@ -267,10 +284,11 @@ def build(document) -> None:
          "food. Time-temperature indicators are labels whose colour changes "
          "irreversibly in response to accumulated thermal exposure, integrating "
          "temperature history in the same way the Ratkowsky model does but "
-         "chemically rather than computationally. Taoukis and Labuza established "
-         "the kinetic basis for matching an indicator's activation energy to the "
-         "spoilage reaction of a particular product, which is what makes the "
-         "colour change meaningful rather than merely proportional to time.")
+         "chemically rather than computationally. Taoukis and Labuza (1989) "
+         "established the kinetic basis for matching an indicator's activation "
+         "energy to the spoilage reaction of a particular product, which is "
+         "what makes the colour change meaningful rather than merely "
+         "proportional to time.")
 
     para(document,
          "TTIs have two advantages over anything in this thesis. They travel "
@@ -605,27 +623,30 @@ def build(document) -> None:
 
     table(document,
           ["Study", "Sensing", "Model", "Platform", "Processing", "Reported accuracy"],
-          [["Sonwani et al. (2022)", "Gas array (MQ series)",
-            "Threshold rules and classical ML", "Microcontroller", "Cloud", "~87%"],
-           ["Ahmadzadeh et al. (2023)", "Review, multiple",
-            "Various", "Various", "Mostly cloud", "n/a (review)"],
-           ["Nemade et al. (2024)", "Camera, gas, weight",
-            "CNN and classical baselines", "Raspberry Pi", "Local broker, web app",
-            "~92%"],
-           ["Gómez et al. (2008)", "Electronic nose",
-            "Pattern recognition", "Laboratory instrument", "Offline",
-            "High, laboratory conditions"],
-           ["Xu-type transfer-learning studies", "Camera (RGB)",
-            "MobileNetV2 transfer learning", "Edge devices", "Local", "~94%"],
-           ["**This thesis**", "**Camera, gas, mass, temp/RH (simulated)**",
+          [["Sonwani et al. (2022)", "Gas, humidity, temperature; camera; "
+            "Peltier cooler and humidifier",
+            "11-layer CNN on Fruits-360 for produce type; sensor thresholds "
+            "for condition", "Arduino", "Phone alerts",
+            "95% (fruit-type identification)"],
+           ["Ahmadzadeh et al. (2023)", "Review, whole supply chain",
+            "Various", "Various", "Various", "n/a (review)"],
+           ["Nemade et al. (2024)", "MQ2/MQ4 methane, DHT11",
+            "Random Forest with RFE and M-SMOTE", "NodeMCU", "Not stated",
+            "94.76% (cooked foods)"],
+           ["Gómez et al. (2008)", "PEN2 electronic nose",
+            "PCA and LDA", "Laboratory instrument", "Offline",
+            "Storage ages separated only partially"],
+           ["**This thesis**", "**Camera, gas, mass, temp/RH (sensors simulated)**",
             "**MobileNetV2 + late fusion, with ablations**", "**Raspberry Pi 4 (design)**",
-            "**Fully on-device**", "**98.0% binary; 96.0% three-state**"]],
+            "**Fully on-device**",
+            f"**{R.pct(R.visual['accuracy'])} binary; {R.pct(R.acc('fusion'))} three-state**"]],
           "Table 1",
           "Reviewed food spoilage monitoring systems. Accuracy figures are not "
           "comparable across rows: each was measured on a different private "
           "dataset of unknown difficulty, under different class definitions. "
-          "The column records what each study reported, not a ranking. The "
-          "figures in the final row are explained in Chapter 5, including why "
+          "The column records what each study reported, not a ranking; "
+          "Sonwani's figure is for identifying the produce type, not its "
+          "condition. The final row is explained in Chapter 5, including why "
           "the binary result is less impressive than it looks and why the "
           "sensor channel being simulated constrains what the three-state "
           "figure means.",
