@@ -28,12 +28,13 @@ def build(document) -> None:
 
     para(document,
          "When researchers ask people why they threw food away, the answers are "
-         "often about not knowing. Not knowing if the yoghurt is still fine three "
-         "days after its date. Not knowing that a bag of spinach was pushed to "
-         "the back of the shelf a week ago. Not knowing if chicken that smells a "
-         "bit strange is really bad or just smells of the packaging. The waste "
-         "is a reaction to uncertainty. Nobody wants food poisoning, so when in "
-         "doubt, the food goes in the bin.")
+         "often about not knowing. People do not know if the yoghurt is still "
+         "fine three days after its date. They do not know that a bag of "
+         "spinach was pushed to the back of the shelf a week ago. And they are "
+         "not sure if chicken that smells a bit strange is really bad or if it "
+         "just smells of the packaging. So the waste is a reaction to "
+         "uncertainty. Nobody wants food poisoning, and when people are in "
+         "doubt the food goes in the bin.")
 
     heading(document, "The problem with printed dates", 2)
 
@@ -51,8 +52,8 @@ def build(document) -> None:
          "at 7 °C because its thermostat drifted, or one opened forty times a "
          "day in a shared flat, ages its contents much faster than one held at "
          "3 °C and opened five times. Two boxes of strawberries with the same "
-         "printed date can be days apart in real condition. The label cannot "
-         "know this.")
+         "printed date can be days apart in their real condition, and the "
+         "label has no way to know this.")
 
     para(document,
          "A date also cannot change. Once printed it is fixed, whether the item "
@@ -272,9 +273,7 @@ def build(document) -> None:
     para(document,
          "The work has a theoretical part and a practical part, in the order the "
          "faculty template expects. The theoretical part reviews the literature "
-         "and builds the foundation: which sensing methods carry information "
-         "about spoilage, which model types suit small hardware, and which "
-         "equations describe microbial growth well enough to build on. The "
+         "and builds the foundation. It looks at which sensing methods carry information about spoilage, which model types suit small hardware, and which equations describe microbial growth well enough to build on. The "
          "practical part designs, implements and evaluates the prototype on "
          "that foundation.")
 
@@ -282,8 +281,7 @@ def build(document) -> None:
          "Development was incremental rather than following a formal framework. "
          "Scrum and similar methods assume a team and changing requirements. "
          "Neither applies to one person building against a fixed assignment. "
-         "What I kept is the useful part: work in steps that each end with "
-         "something testable. The steps were the physical model, the sensor "
+         "What I kept is the useful part. I worked in steps, and each step ended with something I could test. The steps were the physical model, the sensor "
          "layer, the dataset pipeline, the machine learning models, the "
          "backend, the interface, and integration. Each is a package in the "
          "repository with its own tests.")

@@ -182,7 +182,8 @@ def build(document) -> None:
 
     para(document,
          "The most valuable outcome of this project was not the accuracy "
-         "figures. It was finding out which of them mean anything.")
+         "figures. It was finding out which of these numbers actually mean "
+         "something.")
 
     para(document,
          f"A {R.pct(R.naive_best_val) if R.naive_best_val else '99.7%'} "
@@ -198,13 +199,14 @@ def build(document) -> None:
 
     para(document,
          "That pattern is the thing worth keeping. Building the system was the "
-         "easy part. Working out what it had really shown, and being willing "
+         "easier part of the work. Working out what it had really shown, and "
+         "being willing "
          "to write down the answer when it was less than I hoped, was the part "
          "that needed judgement.")
 
     para(document,
-         "The prototype does not yet deserve to be trusted with anyone's "
-         "dinner. It is, however, a system that can be checked, argued with "
+         "The prototype is not yet good enough to be trusted with anyone's "
+         "dinner. But it is a system that can be checked, argued with "
          "and built on, and the exact experiment that would settle its main "
          "question is specified. That seems a more useful place to stop than a "
          "confident number nobody can verify.")

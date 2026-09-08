@@ -74,8 +74,7 @@ def build(document) -> None:
     para(document,
          "Target 12.3 of the Sustainable Development Goals aims to halve food "
          "waste per person at retail and consumer level by 2030 (United "
-         "Nations, 2015). The consumer half is the harder half, for the reason "
-         "given above: there is no manager to instruct. Retail waste responds "
+         "Nations, 2015). The consumer half is the harder half, for the reason given above. There is no manager who can be told what to do. Retail waste responds "
          "to margins and regulation. Household waste responds only to what "
          "people do in their own kitchens.")
 
@@ -86,7 +85,7 @@ def build(document) -> None:
          "that only a researcher can measure is not enough. These are hard "
          "conditions, and they explain "
          "why so much of the technical literature stops at the prototype stage. "
-         "The engineering is the easy part.")
+         "The engineering part is in fact the easier part of the problem.")
 
     para(document,
          "It also sets a realistic limit on what one device can claim. "
@@ -114,8 +113,8 @@ def build(document) -> None:
          "Reading the works it covers, the consumer stage appears much less "
          "often than retail and supply chain uses. This is my observation, not "
          "a claim the review makes. The imbalance is understandable. A "
-         "supermarket has a manager with a budget and a measurable return. A "
-         "household has neither.")
+         "supermarket has a manager with a budget and a measurable return, and "
+         "a household has neither of these.")
 
     para(document,
          "Sonwani et al. (2022) built an Arduino based prototype with gas, "
@@ -147,8 +146,7 @@ def build(document) -> None:
 
     para(document,
          "Where the processing happens is a real design choice, and most "
-         "published prototypes choose the cloud: the device collects, a server "
-         "decides. Shi et al. (2016) give the general case for the other "
+         "published prototypes choose the cloud. The device collects the data and a server decides. Shi et al. (2016) give the general case for the other "
          "choice. Pushing computation towards the data source cuts delay and "
          "bandwidth and improves privacy.")
 
@@ -281,8 +279,7 @@ def build(document) -> None:
          "TTIs have two advantages over anything in this thesis. They travel "
          "with the item through the whole cold chain instead of only watching "
          "the last step, and they need no power, no calibration and no "
-         "interface. Their limit is that they give exactly one bit at a "
-         "threshold: the label has changed or it has not. They cannot report a "
+         "interface. Their limit is that they give only one bit of information at one threshold. The label has changed or it has not. They cannot report a "
          "trend, cannot say how many days are left, and cannot notice that an "
          "item has been forgotten.")
 
@@ -314,7 +311,7 @@ def build(document) -> None:
          "Convolutional neural networks are the standard tool for image "
          "classification. They learn layers of filters from data instead of "
          "relying on hand designed features. The constraint for this "
-         "application is not accuracy but size: the network has to run on an "
+         "application is not accuracy but size. The network has to run on an "
          "ARM processor inside a power budget.")
 
     para(document,
@@ -330,8 +327,7 @@ def build(document) -> None:
     para(document,
          "Training such a network from scratch needs far more labelled data "
          "than any food freshness dataset has. Transfer learning is the "
-         "standard answer: start from weights trained on a large general "
-         "dataset such as ImageNet (Deng et al., 2009), then adapt. Pan and "
+         "standard answer. You start from weights trained on a large general dataset such as ImageNet (Deng et al., 2009) and then adapt them. Pan and "
          "Yang (2010) give the general framework, and Yosinski et al. (2014) "
          "show that early convolutional layers learn widely reusable features "
          "(edges, textures, colour contrasts) while later layers specialise. "
@@ -499,9 +495,7 @@ def build(document) -> None:
 
     para(document,
          "The applied psychology literature on alarm fatigue, mostly from "
-         "hospitals, agrees: response to alerts gets worse as alerts get more "
-         "frequent, and it gets worse fastest when many alerts turn out to be "
-         "false. The design lesson is to alert on changes and not on states, "
+         "hospitals, agrees with this. Response to alerts gets worse as alerts get more frequent, and it gets worse fastest when many of the alerts turn out to be false. The design lesson is to alert on changes and not on states, "
          "to require confidence before interrupting anyone, and to give the "
          "user a way to silence the system without abandoning it. Chapter 4 "
          "does all three.")

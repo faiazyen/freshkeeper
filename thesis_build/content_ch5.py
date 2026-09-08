@@ -69,7 +69,8 @@ def build(document) -> None:
          f"{_sw['15.0']:.1f} days at 15 °C. The implied factor for a ten degree "
          f"rise is about {(_sw['4.0'] / _sw['15.0']) ** (10 / 11):.0f}, which is "
          "inside the 2 to 4 range reported for microbial spoilage. The model "
-         "was not tuned to produce that.")
+         "was not tuned to give this result. It just comes out of the "
+         "equations.")
 
     para(document,
          "Path dependence works as intended. Two identical strawberries aged "
@@ -117,8 +118,7 @@ def build(document) -> None:
 
     para(document,
          f"{R.pct(R.visual['accuracy'])} accuracy with an AUC of "
-         f"{R.f4(R.visual['auc'])} is a strong number, and it would be easy to "
-         "present it as the main finding. It should not be.")
+         f"{R.f4(R.visual['auc'])} is a strong number, and it would be easy to present it as the main finding. But I think it should not be presented like that.")
 
     para(document,
          "Breaking the result down by commodity shows where the difficulty "
@@ -164,8 +164,7 @@ def build(document) -> None:
 
     para(document,
          "So leakage was not the explanation. The task is simply easy, and the "
-         "reason is in the data. Rotten fruit in this dataset is very rotten: "
-         "brown, collapsed, visibly mouldy. Fresh fruit is clearly fresh. A "
+         "reason is in the data. Rotten fruit in this dataset is very rotten. It is brown, collapsed and visibly mouldy. Fresh fruit is clearly fresh. A "
          "human labeller can only label with confidence at the extremes, so "
          "that is what public datasets contain.")
 
@@ -416,8 +415,8 @@ def build(document) -> None:
          "cost. Everything else together (decoding, preprocessing and the whole "
          "fusion head) is under 4 milliseconds. Any optimisation effort "
          "belongs on the backbone or on avoiding it, which is one more "
-         "practical argument for the sensor only path: it skips the expensive "
-         "stage completely.")
+         "practical argument for the sensor only path, because it skips the "
+         "expensive stage completely.")
 
     para(document,
          f"Scaling by a {R.pi_factor:.1f}× single core slowdown, the ratio of "
@@ -453,8 +452,7 @@ def build(document) -> None:
           widths=[5.4, 2.8, 3.4, 3.0])
 
     para(document,
-         "Float16 is the sensible default: half the size, no measurable "
-         "accuracy cost. Int8 is worth it only where storage is really tight, "
+         "Float16 is the sensible default. It halves the size and has no measurable accuracy cost. Int8 is worth it only where storage is really tight, "
          "and on a device with a 64 GB card it is not.")
 
     rich_para(document, [
@@ -566,8 +564,8 @@ def build(document) -> None:
          "The three state results depend completely on simulated sensor "
          "features whose generating model also produced the labels. They show "
          "that the architecture trains, converges and can use sensor "
-         "information under a stated model. They are not evidence about a "
-         "fridge.")
+         "information under a stated model. They are not evidence about what "
+         "happens in a real fridge.")
 
     para(document,
          "No claim is made about waste reduction. Published trials of food "
@@ -626,8 +624,8 @@ def build(document) -> None:
          "pessimistic. And per item randomness seeded from Python's hash() of "
          "a string, which the interpreter salts differently in every process, "
          "meant the sensor corpus changed on every run while the documentation "
-         "promised exact reproducibility. The numbers were always believable, "
-         "just never the same twice.")
+         "promised exact reproducibility. The numbers always looked believable, "
+         "but they were never the same twice.")
 
     para(document,
          "None of these was caught by reading the code. Each was caught by "

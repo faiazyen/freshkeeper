@@ -57,8 +57,7 @@ def build(document) -> None:
          "the alert engine and the interface.")
 
     para(document,
-         "One design decision should be stated early: the sensor abstraction "
-         "boundary. Nothing above the hardware layer imports a GPIO library. "
+         "One design decision should be stated early, and that is the sensor abstraction boundary. Nothing above the hardware layer imports a GPIO library. "
          "Everything talks to an interface with two implementations behind it. "
          "One drives real hardware. The other generates readings from the "
          "physical model. This is what lets the whole system (the API, the "
@@ -126,8 +125,8 @@ def build(document) -> None:
     para(document,
          "The LED strip is switched through a 2N7000 N-channel MOSFET, not "
          "driven from a GPIO pin. A Raspberry Pi pin can safely give about 16 "
-         "mA, and a 50 cm strip wants much more. Driving it directly damages "
-         "the pin.")
+         "mA, and a 50 cm strip wants much more than that. If you drive it "
+         "directly, the pin gets damaged.")
 
     para(document,
          "The MQ sensors need a 5 V heater supply, but the MCP3008 input must "
@@ -517,9 +516,9 @@ def build(document) -> None:
          "centres in embedding space settled it. The fresh apple centre is "
          f"closer to rotten apple ({R.anomaly['fresh_apple_vs_rotten_apple']:.3f}) "
          f"than to fresh orange ({R.anomaly['fresh_apple_vs_fresh_orange']:.3f}), "
-         "and the two file sets do not overlap. The images are apples. Only "
-         "the file names are wrong. I trusted the metadata column and ignored "
-         "the file names.")
+         "and the two file sets do not overlap. So the images really are apples "
+         "and only the file names are wrong. For this reason I trusted the "
+         "metadata column and ignored the file names.")
 
     # ==================================================================
     heading(document, "Pairing images with sensor readings", 2)
@@ -696,7 +695,8 @@ if pre["accuracy"] < 0.90:
     para(document,
          "Measurement runs on a background thread under APScheduler at a "
          "thirty minute interval. The interval matches the MQ heater duty "
-         "cycle and the power budget. It is not an arbitrary round number. The "
+         "cycle and the power budget, so it is not just a round number that "
+         "was picked at random. The "
          "job is configured so that only one instance can run at a time and "
          "overdue runs are merged.")
 
@@ -705,8 +705,8 @@ if pre["accuracy"] < 0.90:
          "over its slot must not have a second copy started on top of it. Two "
          "threads reading the same load cell produce a reading that belongs to "
          "neither, and on real hardware the gas heaters would be switched on "
-         "and off at the same time. The default scheduler behaviour allows "
-         "exactly that.")
+         "and off at the same time. The default scheduler behaviour would allow "
+         "exactly this to happen.")
 
     heading(document, "Database", 3)
 
@@ -873,8 +873,8 @@ if pre["accuracy"] < 0.90:
     para(document,
          "A camera photographing the inside of a fridge every thirty minutes "
          "builds a detailed record of a household: what they eat, when they "
-         "shop, when they cook, and when nobody is home. That is sensitive "
-         "data, and the design treats it as such.")
+         "shop, when they cook, and when nobody is home. This is sensitive "
+         "data and the design treats it that way.")
 
     para(document,
          "The protection is in the structure, not in a procedure. Images are "
