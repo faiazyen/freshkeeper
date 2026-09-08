@@ -632,6 +632,57 @@ if pre["accuracy"] < 0.90:
     # ==================================================================
     heading(document, "Software implementation", 2)
 
+    heading(document, "Design decisions", 3)
+
+    para(document,
+         "Three structural choices in the software are worth setting out, "
+         "because each was made against a plausible alternative.")
+
+    para(document,
+         "Dependencies are injected rather than imported. The inference service "
+         "receives a sensor backend and a session factory; the Flask application "
+         "receives a database path and an optional inference service. The "
+         "alternative — modules importing their collaborators directly — is "
+         "shorter to write and makes the system untestable, because there is "
+         "then no way to run the API without a trained model or the acquisition "
+         "loop without hardware. The test suite runs in nine seconds precisely "
+         "because nothing has to be real.")
+
+    para(document,
+         "Failure modes are chosen deliberately rather than inherited. A cycle "
+         "that raises does not kill the scheduler thread, because a sensor "
+         "throwing once every few days is normal while a monitoring system that "
+         "silently stops monitoring is not. A missing camera falls back to the "
+         "sensor-only model rather than aborting. A missing model returns a "
+         "uniform distribution, which cannot clear the alert confidence floor, "
+         "so the system goes quiet instead of guessing. The general principle is "
+         "that a degraded system should do less, not do something wrong.")
+
+    para(document,
+         "Timestamps are timezone-aware throughout. This looks like fussiness "
+         "and is not: a system logging naive local timestamps produces a corrupt "
+         "hour of history twice a year at the daylight-saving boundaries, and "
+         "the corruption surfaces months later as a freshness trajectory that "
+         "goes backwards. Readings are stored in UTC and converted only for "
+         "display.")
+
+    heading(document, "Acquisition loop", 3)
+
+    para(document,
+         "Measurement runs on a background thread under APScheduler at a "
+         "thirty-minute interval, chosen to match the MQ heater duty cycle and "
+         "the power budget rather than being an arbitrary round number. The job "
+         "is configured so that only one instance can run at a time and "
+         "overdue runs coalesce.")
+
+    para(document,
+         "That configuration matters more than it appears. A cycle that "
+         "overruns its slot must not have a second copy started on top of it: "
+         "two threads reading the same load cell produce a reading that belongs "
+         "to neither, and on real hardware the gas heaters would be commanded on "
+         "and off simultaneously. The default scheduler behaviour permits "
+         "exactly that.")
+
     heading(document, "Database", 3)
 
     figure(document, f"{FIG}/er_diagram.png", "Figure 5",

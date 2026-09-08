@@ -322,6 +322,41 @@ def build(document) -> None:
          "physics, but it is a demonstration of correct plumbing, not evidence "
          "about real food.")
 
+    heading(document, "Project risks and how they were handled", 3)
+
+    para(document,
+         "Three risks were identified at the outset and each shaped a design "
+         "decision, so they are recorded here rather than in a retrospective.")
+
+    para(document,
+         "The first was hardware availability. If the components could not be "
+         "obtained and assembled in time, a design that assumed physical "
+         "sensors would leave nothing to evaluate. The mitigation was the "
+         "abstraction seam described in Chapter 4: the system talks to a sensor "
+         "interface rather than to GPIO, so the software could be built and "
+         "tested in full against a simulated backend. This risk materialised, "
+         "the mitigation held, and the cost was that the strongest results are "
+         "bounded by the simulation.")
+
+    para(document,
+         "The second was dataset availability. Food spoilage corpora are scarce "
+         "and often unlicensed for redistribution. The mitigation was to select "
+         "a corpus with an explicit permissive licence and to write the download "
+         "as a scripted step, so that the pipeline is reproducible without "
+         "redistributing anyone's data. What was not anticipated was that the "
+         "chosen corpus would have quality problems of its own, which "
+         "Chapter 4 documents.")
+
+    para(document,
+         "The third was that a prototype validated only in simulation might "
+         "produce results that look like measurements and are not. This is the "
+         "risk that most concerns the scientific integrity of the work, and the "
+         "mitigation is editorial rather than technical: the provenance of every "
+         "number is stated at the point it is reported, the simulation module "
+         "carries the warning in its own docstring, and Chapter 5 separates what "
+         "was measured from what it supports. Whether that mitigation worked is "
+         "for the reader to judge.")
+
     heading(document, "Ethical and sustainability considerations", 3)
 
     para(document,

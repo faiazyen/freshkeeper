@@ -352,6 +352,22 @@ def build(document) -> None:
          "matters most because a missed spoiled item is the failure with a "
          "health consequence.")
 
+    figure(document, f"{FIG}/confusion_vision_only.png", "Figure",
+           "Vision-only confusion matrix. Of 669 marginal items it assigns 378 "
+           "to fresh and 242 to spoiled, getting 49 right — the failure the "
+           "corpus construction makes inevitable.", width_cm=10.5)
+
+    figure(document, f"{FIG}/confusion_fusion.png", "Figure",
+           "Projected-fusion confusion matrix. The error structure resembles "
+           "sensor-only, with slightly more mass on the marginal boundaries.",
+           width_cm=10.5)
+
+    para(document,
+         "Setting the three matrices side by side makes the ablation concrete. "
+         "Vision-only fails on one specific class for a structural reason. "
+         "Sensor-only and fusion both concentrate their errors on the same two "
+         "boundaries, and fusion simply makes a few more of them.")
+
     # ==================================================================
     heading(document, "Inference cost", 2)
 
@@ -544,6 +560,46 @@ def build(document) -> None:
          "trains and can be profiled. It cannot settle whether fusion helps. "
          "Published fusion results validated on synthetic sensor data should be "
          "read with that in mind, including these.")
+
+    heading(document, "What a hardware validation would have to show", 3)
+
+    para(document,
+         "Since the central negative result is attributed to the simulation, it "
+         "is only fair to specify what evidence would overturn it. Three things "
+         "would have to be measured on a real shelf.")
+
+    para(document,
+         "First, that gas concentration genuinely leads visible change, and by "
+         "how much. The electronic-nose literature supports the direction, but "
+         "the visual-lag thresholds used here were chosen rather than measured, "
+         "and they determine the difficulty of the whole three-state task. "
+         "Photographing items on a fixed schedule while logging gas readings, "
+         "with independent spoilage judgements, would give the real lag per "
+         "commodity.")
+
+    para(document,
+         "Second, that real sensor noise is worse than modelled in a way that "
+         "leaves room for vision to help. The simulation includes quantisation, "
+         "Gaussian noise and heater drift, but not cross-sensitivity to "
+         "unrelated compounds, not the mixing problem when several foods share "
+         "one headspace, and not sensor-to-sensor variation. Each of those "
+         "degrades the sensor channel specifically, which is where the headroom "
+         "for fusion would come from.")
+
+    para(document,
+         "Third, that a camera aimed at one slot carries information the shared "
+         "headspace cannot. This is the strongest theoretical argument for "
+         "fusion and the simulation cannot test it at all, because the modelled "
+         "gas reading is already per-item. On real hardware, gas is a property "
+         "of the enclosure while an image is a property of a slot, and that "
+         "asymmetry is exactly the kind of complementarity late fusion exists "
+         "to exploit.")
+
+    para(document,
+         "If all three held, fusion would plausibly beat the sensor baseline on "
+         "real data despite losing to it here. That is a testable prediction "
+         "rather than a defence of the result, and it is the first thing the "
+         "hardware work in Chapter 6 should check.")
 
     heading(document, "On engineering defects and where they hid", 3)
 

@@ -538,6 +538,38 @@ def build(document) -> None:
          "either the model reproduces them or it does not. Chapter 5 reports how "
          "closely it does.")
 
+    heading(document, "Evaluating under asymmetric cost", 3)
+
+    para(document,
+         "Accuracy is the default reported metric and it is close to useless "
+         "for this problem, for two reasons that compound.")
+
+    para(document,
+         "The first is class balance. A corpus with three roughly equal classes "
+         "makes accuracy interpretable, but a deployed system sees mostly fresh "
+         "items, because most food in a fridge is fine most of the time. A "
+         "classifier that predicted fresh unconditionally would score well on "
+         "such a distribution while being worthless. Macro-averaged F1 weights "
+         "each class equally regardless of frequency and is the more honest "
+         "summary, which is why it is reported alongside accuracy throughout "
+         "Chapter 5.")
+
+    para(document,
+         "The second is that the two error directions do not cost the same. "
+         "Declaring a spoiled item fresh may make someone ill. Declaring a fresh "
+         "item spoiled wastes the food the system exists to save. Both are "
+         "real costs and they are not equal, so a single figure that averages "
+         "over them discards the distinction that matters most.")
+
+    para(document,
+         "The standard treatment is to report per-class recall and precision "
+         "separately and to name in advance which class carries the asymmetric "
+         "cost. Here that is recall on the spoiled class, and it is reported "
+         "for every model in Chapter 5. Confusion matrices are given in full "
+         "rather than summarised, because the structure of the errors — which "
+         "classes get confused with which — carries information that no scalar "
+         "preserves.")
+
     # ------------------------------------------------------------------
     heading(document, "Human factors and alert design", 2)
 
