@@ -371,6 +371,9 @@ def build(document) -> None:
     heading(document, "Software and data sources", 2)
 
     for entry in [
+        "MAZUMDER YEN, F. H., 2026. FreshKeeper: an IoT food spoilage "
+        "prediction prototype. Source code, MIT licence. Available at: "
+        f"https://github.com/faiazyen/freshkeeper",
         "CALIFA URQUIZA, M. A., 2019. MQSensorsLib: Arduino library for MQ "
         "series gas sensors, with sensitivity-curve coefficients digitised from "
         "the manufacturer datasheets. Available at: "
@@ -466,7 +469,8 @@ def build(document) -> None:
          f"{R.files} tracked files. "
          "The modules reproduced here are the ones a reader would need to check "
          "the claims in Chapters 4 and 5. Everything else, including the test "
-         "suite, the training scripts and the interface, is in the repository.")
+         "suite, the training scripts and the interface, is in the repository "
+         "at https://github.com/faiazyen/freshkeeper.")
 
     _listing(document, "A.1", "freshkeeper/hardware/spoilage_model.py",
              REPO / "freshkeeper/hardware/spoilage_model.py",
@@ -545,13 +549,14 @@ def build(document) -> None:
                "Listing B.1",
                "Repository layout. The Makefile target `all` regenerates every "
                "result and figure in this thesis from the raw dataset "
-               "download.")
+               f"download. The repository is public at https://github.com/faiazyen/freshkeeper.")
 
     unnumbered_heading(document, "Appendix C: Reproducing the results", 2)
 
     para(document,
          "Python 3.12 is required. TensorFlow does not work on the Python 3.9 "
-         "that ships with macOS, which cost an hour to discover.")
+         "that ships with macOS, which cost an hour to discover. Start by "
+         f"cloning the repository from https://github.com/faiazyen/freshkeeper.")
 
     code_block(document,
                '''make venv install     # create the environment, install dependencies

@@ -31,7 +31,8 @@ def build(document) -> None:
          f"The complete implementation is {R.n(R.loc)} lines of Python across "
          f"{R.files} tracked files, with {R.tests} automated tests. The listings "
          "in this chapter are extracts. Appendix A has the main modules in full "
-         "and Appendix B gives the repository layout.")
+         "and Appendix B gives the repository layout. The complete source is "
+         "public at https://github.com/faiazyen/freshkeeper.")
 
     # ==================================================================
     heading(document, "System architecture", 2)

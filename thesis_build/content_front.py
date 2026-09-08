@@ -72,7 +72,8 @@ def build(document) -> None:
     para(document,
          "The prototype software in this thesis was developed with AI help as an "
          "auxiliary tool for the research part. It is published under the MIT "
-         "licence and its development history is in the repository. The image "
+         "licence, and its full development history, including which parts were "
+         "written with AI help, is public at https://github.com/faiazyen/freshkeeper. The image "
          "dataset used for training is a third party dataset under the CC-BY-4.0 "
          "licence. It is credited in Chapter 4 and in the references. The machine "
          "learning frameworks, libraries and the pretrained MobileNetV2 weights "
