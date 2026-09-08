@@ -6,7 +6,7 @@ out. Screenshots pasted in by hand drift away from the code they document.
 
 Start the server first:
 
-    python scripts/run_server.py --db data/demo.db --port 5055
+    python scripts/run_server.py --db data/demo.db --port 5055 --token devtoken
     python scripts/capture_screenshots.py
 """
 

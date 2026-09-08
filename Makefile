@@ -49,7 +49,9 @@ demo: ## seed the demo database with an accelerated simulation
 	$(PY) scripts/seed_demo.py
 
 serve: ## run the web interface against the demo database
-	$(PY) scripts/run_server.py --db data/demo.db --port 5055
+	# Fixed token so the screenshot script can log in. Omit --token in
+	# real use and the server generates one and prints it.
+	$(PY) scripts/run_server.py --db data/demo.db --port 5055 --token devtoken
 
 screenshots: ## capture interface figures (server must be running)
 	$(PY) scripts/capture_screenshots.py

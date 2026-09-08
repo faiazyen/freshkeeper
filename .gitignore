@@ -10,6 +10,7 @@ htmlcov/
 data/raw/
 data/processed/
 data/embeddings/
+data/embeddings_naive/
 data/sensor_corpus/
 data/captures/
 *.db
