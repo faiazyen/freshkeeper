@@ -4,7 +4,7 @@ from pathlib import Path
 
 from docx_builder import (
     bullet, code_block, figure, heading, list_of, numbered, page_break, para,
-    reset_numbering, rich_para, table,
+    reset_numbering, rich_para, table, unnumbered_heading,
 )
 
 REPO = Path(__file__).resolve().parents[1] / "freshkeeper"
@@ -431,9 +431,9 @@ def build(document) -> None:
     page_break(document)
 
     # ==================================================================
-    heading(document, "Appendix", 1)
+    unnumbered_heading(document, "Appendix", 1)
 
-    heading(document, "Appendix A: Source code", 2)
+    unnumbered_heading(document, "Appendix A: Source code", 2)
 
     para(document,
          "The complete implementation is 5,472 lines of Python across 73 files. "
@@ -475,7 +475,7 @@ def build(document) -> None:
              "Physics tests, including the calibration test that fails if any "
              "growth coefficient drifts from its published reference.")
 
-    heading(document, "Appendix B: Repository structure", 2)
+    unnumbered_heading(document, "Appendix B: Repository structure", 2)
 
     code_block(document,
                '''freshkeeper/
@@ -520,7 +520,7 @@ def build(document) -> None:
                "result and figure in this thesis from the raw dataset "
                "download.")
 
-    heading(document, "Appendix C: Reproducing the results", 2)
+    unnumbered_heading(document, "Appendix C: Reproducing the results", 2)
 
     para(document,
          "Python 3.12 is required. TensorFlow does not work on the Python 3.9 "
@@ -545,7 +545,7 @@ make all              # everything above, about 40 minutes''',
                "Full reproduction. Every stochastic process is seeded, so a "
                "rerun reproduces the figures in this thesis exactly.")
 
-    heading(document, "Appendix D: Machine-readable results", 2)
+    unnumbered_heading(document, "Appendix D: Machine-readable results", 2)
 
     para(document,
          "Each pipeline stage writes a JSON file. Every number quoted in "
@@ -577,7 +577,7 @@ make all              # everything above, about 40 minutes''',
 def _listing(document, number: str, title: str, path: Path, description: str,
              max_lines: int = 150) -> None:
     """Insert a source listing, truncated if very long."""
-    heading(document, f"{number}  {title}", 3)
+    unnumbered_heading(document, f"{number}  {title}", 3)
     para(document, description, space_after=4)
     if not path.exists():
         para(document, f"[source not found: {path}]", italic=True)

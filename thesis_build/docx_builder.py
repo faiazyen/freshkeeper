@@ -72,7 +72,7 @@ def reset_registry() -> None:
     for kind in _SEQ:
         _SEQ[kind] = 0
         _REGISTRY[kind].clear()
-CODE_FONT = "Consolas"
+CODE_FONT = "Courier New"
 
 
 def new_document() -> docx.Document:
@@ -135,6 +135,28 @@ def add_page_field(paragraph) -> None:
 def heading(document, text: str, level: int):
     """Add a numbered heading. Never include the number in ``text``."""
     return document.add_heading(text, level=level)
+
+
+def unnumbered_heading(document, text: str, level: int):
+    """A heading that keeps its style but carries no automatic number.
+
+    The template numbers every heading style, which is right for the chapters
+    and wrong for the appendices: a paragraph labelled "A.2" in its own text
+    comes out as "9.1.2  A.2", numbered twice. Cancelling the numbering for
+    these specific paragraphs -- rather than dropping the heading style -- keeps
+    them in the contents list and keeps their formatting.
+    """
+    paragraph = document.add_heading(text, level=level)
+    p_pr = paragraph._p.get_or_add_pPr()
+    num_pr = OxmlElement("w:numPr")
+    ilvl = OxmlElement("w:ilvl")
+    ilvl.set(qn("w:val"), "0")
+    num_id = OxmlElement("w:numId")
+    num_id.set(qn("w:val"), "0")   # numId 0 cancels inherited list numbering
+    num_pr.append(ilvl)
+    num_pr.append(num_id)
+    p_pr.append(num_pr)
+    return paragraph
 
 
 def para(document, text: str, style: str | None = None, justify: bool = True,

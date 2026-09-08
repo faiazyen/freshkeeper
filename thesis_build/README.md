@@ -40,6 +40,19 @@ appendices, from that snapshot.
 | `content_ch5.py` | Results and Discussion |
 | `content_ch6_8.py` | Conclusion, References, Lists, Appendices |
 | `build.py` | Assembly and validation |
+| `check_document.py` | Renders to PDF and checks the layout |
 
 Figures are read from `../docs/figures`, so regenerate those first with
 `make diagrams` and `make screenshots` if the results have changed.
+
+## Checking the output
+
+```bash
+python check_document.py "../../Main thesis.docx"
+```
+
+Renders to PDF via LibreOffice and checks what the .docx cannot show: text past
+the margin, captions that lost their figure, headings numbered twice, and code
+listings that fell back to a proportional font because Consolas is not
+installed. It also reports the page count of Chapters 1-6, which is the figure
+the faculty measures against.
