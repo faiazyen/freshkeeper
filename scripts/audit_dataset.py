@@ -6,7 +6,7 @@ cause turned out to be the corpus itself: it is an augmented set, and variants
 derived from the same original photograph were being split across train and
 test. A model can memorise a photograph and appear to generalise.
 
-There are no byte-identical duplicates -- all 12,335 files hash differently --
+There are no byte-identical duplicates, all 12,335 files hash differently --
 so the problem is invisible to the obvious check. It shows up in feature
 space: 27% of test images sat within cosine 0.95 of some training image.
 

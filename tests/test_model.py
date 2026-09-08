@@ -43,7 +43,7 @@ class TestVisualModels:
         model = build_visual_cnn()
         assert model.input_shape == (None, 224, 224, 3)
         # Preprocessing lives inside the model, so a caller cannot feed it
-        # wrongly-scaled input -- and cannot double-normalise it either, which
+        # wrongly-scaled input, and cannot double-normalise it either, which
         # is what once trained this to exactly chance.
         assert any("true_divide" in layer.name or "preprocess" in layer.name.lower()
                    or "subtract" in layer.name.lower() or "rescal" in layer.name.lower()

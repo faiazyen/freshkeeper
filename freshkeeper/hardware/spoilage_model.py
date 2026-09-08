@@ -121,8 +121,8 @@ def mq_ppm_from_ratio(ratio: float, coeff_a: float, coeff_b: float) -> float:
 
         ppm = A * (Rs/R0)^(-B)
 
-    Note the direction. Applying these constants the other way round -- as if
-    they mapped ppm to ratio -- drives Rs/R0 to about 1e-4 at realistic
+    Note the direction. Applying these constants the other way round, as if
+    they mapped ppm to ratio, drives Rs/R0 to about 1e-4 at realistic
     concentrations, which saturates a 10-bit ADC and silently returns zero for
     every reading above the low tens of ppm.
     """

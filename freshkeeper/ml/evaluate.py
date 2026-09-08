@@ -9,7 +9,7 @@ Produces:
 Recall on the spoiled class is reported separately throughout, because the two
 error directions do not cost the same. Calling a spoiled item fresh may make
 somebody ill. Calling a fresh item spoiled wastes one piece of fruit, which is
-the exact thing the system exists to prevent -- so neither is free, but they
+the exact thing the system exists to prevent, so neither is free, but they
 are not equal, and a single accuracy figure hides the difference.
 
 Run:  python -m freshkeeper.ml.evaluate

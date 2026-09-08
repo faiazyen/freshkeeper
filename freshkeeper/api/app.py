@@ -77,7 +77,7 @@ def create_app(db_path: str | Path = "data/freshkeeper.db",
             return view(*args, **kwargs)
         return wrapper
 
-    # -- serving the interface --------------------------------------------
+    # serving the interface --------------------------------------------
 
     @app.get("/")
     def index():
@@ -87,7 +87,7 @@ def create_app(db_path: str | Path = "data/freshkeeper.db",
     def static_files(filename):
         return send_from_directory(FRONTEND_DIR, filename)
 
-    # -- API ---------------------------------------------------------------
+    # API ---------------------------------------------------------------
 
     @app.get("/api/health")
     def health():

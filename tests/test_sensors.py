@@ -122,7 +122,7 @@ class TestCrossProcessReproducibility:
 
         An earlier version derived per-item seeds from hash() of a string,
         which Python salts per interpreter process. Same seed, different
-        process, different readings -- while the thesis claimed exact
+        process, different readings, while the thesis claimed exact
         reproducibility. Run the simulation in two subprocesses with different
         hash seeds and require identical output.
         """

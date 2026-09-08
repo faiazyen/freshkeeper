@@ -14,8 +14,8 @@ is no way to say whether the predictions were any good. Logging predictions
 alone would produce a system that can never be shown to be wrong.
 
 SQLite is the engine. It needs no server process, the whole database is one
-file that can be copied off the device, and the write volume here -- six slots
-every thirty minutes, roughly 300 rows a day -- is far below the point where
+file that can be copied off the device, and the write volume here, six slots
+every thirty minutes, roughly 300 rows a day, is far below the point where
 its single-writer limit matters.
 """
 

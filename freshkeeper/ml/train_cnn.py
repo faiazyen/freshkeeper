@@ -84,7 +84,7 @@ def image_dataset(split: str, shuffle: bool, augment: bool) -> tf.data.Dataset:
     # of the model, so that inference takes raw pixels and cannot be fed
     # wrongly-scaled input by a caller. Normalising here as well would map the
     # already-[-1,1] tensor into a band about 0.008 wide, which trains to
-    # exactly chance -- as it did on the first run.
+    # exactly chance, as it did on the first run.
     return ds.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
 

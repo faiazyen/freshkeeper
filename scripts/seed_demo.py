@@ -1,8 +1,8 @@
 """Populate a demo database by running an accelerated storage simulation.
 
 Used to produce the interface screenshots in the thesis and to exercise the
-whole stack end to end. It runs the real acquisition and inference path -- the
-same code the device runs -- with simulated time compressed so that a
+whole stack end to end. It runs the real acquisition and inference path, the
+same code the device runs, with simulated time compressed so that a
 fortnight of storage happens in a few seconds.
 
 Initial mass is read from the load cell at registration rather than typed in.

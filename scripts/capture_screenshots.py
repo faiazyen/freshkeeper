@@ -32,7 +32,7 @@ def main() -> int:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
 
-        # -- desktop dashboard -------------------------------------------
+        # desktop dashboard -------------------------------------------
         page = browser.new_page(viewport=DESKTOP, device_scale_factor=2)
         page.goto(BASE_URL)
         # The app reads its bearer token from localStorage, so seed it and
@@ -44,14 +44,14 @@ def main() -> int:
         page.screenshot(path=FIGURES / "ui_dashboard.png", full_page=True)
         print("  ui_dashboard.png")
 
-        # -- item detail with the freshness chart ------------------------
+        # item detail with the freshness chart ------------------------
         page.click("article:has-text('Oranges')")
         page.wait_for_selector("canvas", timeout=15000)
         page.wait_for_timeout(1500)  # let Chart.js finish its entry animation
         page.screenshot(path=FIGURES / "ui_item_detail.png", full_page=True)
         print("  ui_item_detail.png")
 
-        # -- statistics --------------------------------------------------
+        # statistics --------------------------------------------------
         page.goto(BASE_URL)
         page.wait_for_selector("article", timeout=15000)
         page.click("nav button:has-text('Stats')")
@@ -60,7 +60,7 @@ def main() -> int:
         print("  ui_stats.png")
         page.close()
 
-        # -- mobile dashboard --------------------------------------------
+        # mobile dashboard --------------------------------------------
         mobile = browser.new_page(viewport=MOBILE, device_scale_factor=3,
                                   is_mobile=True, has_touch=True)
         mobile.goto(BASE_URL)

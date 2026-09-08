@@ -17,61 +17,64 @@ def build(document) -> None:
     # ==================================================================
     heading(document, "Conclusion", 1)
 
+    max_err = max(abs(r["error_percent"]) for r in R.shelf["rows"])
+
     para(document,
-         "This thesis set out to determine whether a low-cost device combining "
-         "computer vision with environmental sensing can usefully predict "
-         "household food spoilage, and to build a prototype that demonstrates "
-         "the answer rather than describing one. The prototype exists, it runs, "
-         "and it produced results — including two that contradict the design.")
+         "This thesis set out to find out whether a low cost device can "
+         "usefully predict household food spoilage by combining computer "
+         "vision with environmental sensing. It also set out to build a "
+         "prototype that shows the answer instead of only describing one. The "
+         "prototype exists, it "
+         "runs, and it produced results, including two that go against the "
+         "design.")
 
     heading(document, "Answers to the research questions", 2)
 
     rich_para(document, [
         ("RQ1, on the physical model. ", "b"),
-        ("Yes. A model assembled from the Ratkowsky square-root relationship, "
-         "the modified Gompertz growth curve and the Magnus-Tetens vapour "
-         "pressure formulation reproduces published refrigerated shelf lives to "
-         f"within {max(abs(r['error_percent']) for r in R.shelf['rows']):.1f}% "
-         "across eight commodities spanning five to sixty days. It "
-         "extrapolates in temperature, which it was not fitted for, with a "
-         "coefficient of roughly 3 per ten degrees — inside the range reported "
-         "for microbial spoilage.", ""),
+        ("Yes. A model built from the Ratkowsky square root relationship, the "
+         "modified Gompertz growth curve and the Magnus-Tetens vapour pressure "
+         "formula reproduces published fridge shelf lives to within "
+         f"{max_err:.1f}% for eight commodities from five to sixty days. It "
+         "extends to temperatures it was not fitted for, with a factor of "
+         "about 3 per ten degrees, which is inside the range reported for "
+         "microbial spoilage.", ""),
     ])
 
     rich_para(document, [
         ("RQ2, on visual classification. ", "b"),
-        (f"A transfer-learned MobileNetV2 reaches {R.pct(R.visual['accuracy'])} "
-         f"accuracy and {R.f4(R.visual['auc'])} AUC distinguishing fresh from "
-         "rotten produce on a leakage-controlled split of "
-         f"{R.n(R.visual['n'])} real photographs. The second half of the question has the "
-         "more useful answer: that figure does not demonstrate early spoilage "
-         "detection, because public corpora contain only unambiguous cases. The "
-         "intermediate state a prediction system exists to catch is absent, so "
-         "high accuracy establishes competence on the case where the user "
-         "needed no help.", ""),
+        (f"A transfer learned MobileNetV2 reaches {R.pct(R.visual['accuracy'])} "
+         f"accuracy and {R.f4(R.visual['auc'])} AUC at telling fresh from "
+         "rotten produce on a leakage controlled split of "
+         f"{R.n(R.visual['n'])} real photos. The second half of the question "
+         "has the more useful answer. That figure does not show early "
+         "spoilage detection, because public datasets contain only the clear "
+         "cases. The in between state a prediction system exists to catch is "
+         "missing, so high accuracy shows competence on the case where the "
+         "user needed no help.", ""),
     ])
 
     rich_para(document, [
         ("RQ3, on sensor fusion. ", "b"),
-        (f"No. Under this simulation the sensor-only baseline reaches "
-         f"{R.pct(R.acc('sensor_only'))} and the best fusion variant "
+        (f"No. Under this simulation the sensor only baseline reaches "
+         f"{R.pct(R.acc('sensor_only'))} and the best fusion version "
          f"{R.pct(R.acc('fusion'))}, so adding the visual branch costs "
-         "accuracy. The cause is structural: because the sensor features and "
-         "the ground-truth labels derive from one physical model, the sensor "
-         "branch has privileged access to the target. A secondary finding is "
-         "that relative branch width at the join matters — projecting the "
-         "visual embedding from 1280 to 64 dimensions before concatenation "
-         f"recovered {R.projection_gain_points:.1f} percentage points.", ""),
+         "accuracy. The cause is in the setup: because the sensor features and "
+         "the true labels come from one physical model, the sensor branch has "
+         "an unfair advantage. A second finding is that relative branch width "
+         "at the join matters. Projecting the visual embedding from 1280 to 64 "
+         f"dimensions before joining recovered {R.projection_gain_points:.1f} "
+         "percentage points.", ""),
     ])
 
     rich_para(document, [
         ("RQ4, on inference cost. ", "b"),
-        (f"Yes, on an estimate. Measured cost is {R.stage('total'):.2f} ms per "
-         "item on the development host, of which the MobileNetV2 backbone is "
-         f"{R.pct(R.pipe['stages_ms']['backbone']['share_of_total'], 0)}. Scaled "
-         f"by the Geekbench 6 single-core ratio of {R.pi_factor:.1f}, a Raspberry "
-         f"Pi 4 would need roughly {R.pi_ms:.0f} ms per item, so six slots "
-         f"consume about {R.pct(R.duty, 1)} of a thirty-minute cycle. The "
+        (f"Yes, as an estimate. Measured cost is {R.stage('total'):.2f} ms per "
+         "item on the development computer, of which the MobileNetV2 backbone "
+         f"is {R.pct(R.pipe['stages_ms']['backbone']['share_of_total'], 0)}. "
+         f"Scaled by the Geekbench 6 single core ratio of {R.pi_factor:.1f}, a "
+         f"Raspberry Pi 4 would need about {R.pi_ms:.0f} ms per item, so six "
+         f"slots use about {R.pct(R.duty, 1)} of a thirty minute cycle. The "
          "estimate has not been confirmed on hardware.", ""),
     ])
 
@@ -79,71 +82,72 @@ def build(document) -> None:
 
     reset_numbering()
     numbered(document,
-             f"A complete, reproducible prototype: {R.n(R.loc)} lines of Python "
-             "across a physical spoilage model, a hardware abstraction layer "
-             "with real and simulated backends, a machine learning pipeline, a "
-             "REST API, a database and a single-page interface, with "
-             f"{R.tests} automated tests and a single command that regenerates "
-             "every figure and every number in this document from raw data.")
+             f"A complete, reproducible prototype of {R.n(R.loc)} lines of "
+             "Python. It covers a physical spoilage model, a hardware layer with "
+             "real and simulated backends, a machine learning pipeline, a REST "
+             f"API, a database and a web interface. It has {R.tests} automated "
+             "tests, and one command regenerates every figure and every number "
+             "in this document from raw data.")
     numbered(document,
-             "A calibrated, falsifiable spoilage model implementing established "
-             "predictive microbiology, with a test suite that fails if any "
-             "coefficient drifts from its published reference. It is usable "
-             "independently of the rest of the system.")
+             "A calibrated, checkable spoilage model that implements "
+             "established predictive microbiology, with a test suite that fails "
+             "if any coefficient drifts from its published reference. It can be "
+             "used without the rest of the system.")
     numbered(document,
-             "A dataset audit method that finds near-duplicate leakage which "
-             "hash-based checking misses entirely, together with the finding "
-             f"that {R.pct(R.naive_leak, 0)} of a widely available corpus's "
-             "test split sat within cosine 0.95 of a training image.")
+             "A dataset audit method that finds near duplicate leakage which "
+             f"hash based checks miss completely. With it, {R.pct(R.naive_leak, 0)} "
+             "of a widely used dataset's test split was found to sit within "
+             "cosine 0.95 of a training image.")
     numbered(document,
-             "An honest modality ablation, including the negative result and an "
-             "analysis of why simulated sensor data biases such comparisons "
-             "before training begins.")
+             "An honest baseline comparison, including the negative result and "
+             "an explanation of why simulated sensor data biases such "
+             "comparisons before training starts.")
     numbered(document,
-             "A documented critique of public fresh-versus-rotten corpora: they "
-             "contain the easy cases, so accuracies measured on them — "
-             "including several in the reviewed literature — overstate "
-             "deployed performance.")
+             "A documented critique of public fresh versus rotten datasets. "
+             "They contain the easy cases, so accuracies measured on them, "
+             "including several in the literature, overstate real "
+             "performance.")
 
     heading(document, "Limitations", 2)
 
     para(document,
-         "The hardware was not built. Every gas, temperature, humidity and mass "
-         "reading in this thesis is generated by a model. The model is "
+         "The hardware was not built. Every gas, temperature, humidity and "
+         "mass reading in this thesis is generated by a model. The model is "
          "calibrated and its assumptions are documented, but no result here is "
-         "a measurement from a refrigerator, and the three-state accuracies in "
-         "particular should not be read as though they were.")
+         "a measurement from a fridge, and the three state accuracies in "
+         "particular should not be read as if they were.")
 
     para(document,
-         "The visual-lag assumption — that appearance trails physiology by a "
-         "commodity-specific margin — is supported by the electronic-nose "
-         "literature in direction but the specific thresholds were chosen, not "
-         "measured. They shape the difficulty of the three-state task directly.")
+         "The visual lag assumption, that appearance changes later than "
+         "physiology by a commodity specific margin, is supported in direction "
+         "by the electronic nose literature, but the exact thresholds were "
+         "chosen, not measured. They directly shape the difficulty of the "
+         "three state task.")
 
     para(document,
-         "No waste reduction was measured, and no usability study was run. The "
-         "consumption-event table exists precisely so that a longitudinal study "
-         "could measure the first, and the interface reasoning is documented so "
-         "that the second has something to test.")
+         "No waste reduction was measured, and no usability study was done. "
+         "The consumption event table exists exactly so that a long study "
+         "could measure the first, and the interface reasoning is written down "
+         "so that the second has something to test.")
 
     para(document,
-         "The corpus covers eight commodities, all fruit. Dairy, meat and cooked "
-         "leftovers are where the health stakes are highest and are absent "
-         "entirely. Ammonia sensing was included partly with protein breakdown "
-         "in mind, and no protein-containing food was tested.")
+         "The dataset covers eight commodities, all fruit. Dairy, meat and "
+         "cooked leftovers are where the health risk is highest and they are "
+         "missing completely. Ammonia sensing was included partly with protein "
+         "breakdown in mind, and no protein food was tested.")
 
     heading(document, "Future work", 2)
 
     para(document,
-         "The priority is unambiguous, and everything else is secondary to it.")
+         "The priority is clear, and everything else comes after it.")
 
     rich_para(document, [
-        ("Build the hardware and collect a paired corpus. ", "b"),
-        ("Assemble the design in Chapter 4, place instrumented items on the "
-         "shelf, and log real sensor readings alongside photographs and expert "
-         "spoilage judgements over several months. That corpus would answer RQ3 "
-         "properly, replace the calibrated model with measurements, and would "
-         "be a contribution in its own right, since no such public dataset "
+        ("Build the hardware and collect a paired dataset. ", "b"),
+        ("Assemble the design in Chapter 4, put instrumented items on the "
+         "shelf, and log real sensor readings together with photos and expert "
+         "spoilage judgements over several months. That dataset would answer "
+         "RQ3 properly, replace the calibrated model with measurements, and "
+         "would be a contribution on its own, because no such public dataset "
          "exists. Everything else in this list is less useful until it is "
          "done.", ""),
     ])
@@ -151,28 +155,28 @@ def build(document) -> None:
     bullet(document,
            "Validate the drivers. The Raspberry Pi module is written and its "
            "interface is tested, but its readings have never been compared "
-           "against instruments. The electromagnetic coupling between the gas "
-           "heaters and the load cell is a predicted problem with a designed "
-           "mitigation and no evidence either way.")
+           "with instruments. The electrical coupling between the gas heaters "
+           "and the load cell is a predicted problem with a designed fix and "
+           "no evidence either way.")
     bullet(document,
-           "Extend beyond fruit. Dairy, meat and cooked food carry the real "
-           "safety stakes. Doing so needs both images and a spoilage model for "
-           "commodities where the dominant organisms differ.")
+           "Go beyond fruit. Dairy, meat and cooked food carry the real safety "
+           "risk. Doing so needs both images and a spoilage model for foods "
+           "where the main microbes are different.")
     bullet(document,
-           "Run a usability study. Task-based evaluation with the System "
-           "Usability Scale would test the interface reasoning rather than "
-           "assuming it, and false-alarm tolerance is the specific thing to "
-           "measure.")
+           "Run a usability study. Task based evaluation with the System "
+           "Usability Scale (Brooke, 1996) would test the interface reasoning "
+           "instead of assuming it, and tolerance of false alarms is the "
+           "specific thing to measure.")
     bullet(document,
-           "Handle multiple items per slot. The current design assumes one item "
-           "per load cell and a shared headspace, which is not how anyone "
-           "actually loads a fridge. Attributing a gas reading to one of several "
-           "items in a shared enclosure is a genuinely hard problem and may be "
-           "the sharpest limit on the whole approach.")
+           "Handle several items per slot. The current design assumes one "
+           "item per load cell and shared air, which is not how anyone really "
+           "loads a fridge. Attributing a gas reading to one of several items "
+           "in a shared box is a really hard problem and may be the sharpest "
+           "limit of the whole approach.")
     bullet(document,
-           "Measure waste reduction. A longitudinal deployment across "
-           "households, with the consumption-event logging already implemented, "
-           "is the only way to know whether any of this saves food.")
+           "Measure waste reduction. A long deployment across households, with "
+           "the consumption event logging already implemented, is the only way "
+           "to know whether any of this saves food.")
 
     heading(document, "Closing remarks", 2)
 
@@ -181,28 +185,29 @@ def build(document) -> None:
          "figures. It was finding out which of them mean anything.")
 
     para(document,
-         f"A {R.pct(R.naive_best_val) if R.naive_best_val else '99.7%'} validation score prompted an audit that found real leakage, "
-         "and correcting it barely moved the number — which revealed that the "
-         "task was easy rather than that the model was good. A fusion "
-         "architecture built on the assumption that combining modalities helps "
-         "turned out not to beat its own baseline, for a reason that says more "
-         "about simulated validation than about sensor fusion. Four separate "
-         "bugs produced entirely plausible output while being wrong, and each "
-         "was caught by comparison against something external rather than by "
-         "reading the code.")
+         f"A {R.pct(R.naive_best_val) if R.naive_best_val else '99.7%'} "
+         "validation score started an audit that found real leakage, and "
+         "fixing it barely moved the number. That showed the task was easy, "
+         "not that the model was good. A fusion architecture built on the "
+         "assumption that combining inputs helps turned out not to beat its "
+         "own baseline, for a reason that says more about simulated "
+         "validation than about sensor fusion. Five separate bugs produced "
+         "completely believable output while being wrong, and each was caught "
+         "by comparing against something external and not by reading the "
+         "code.")
 
     para(document,
-         "That pattern is the thing worth carrying forward. Building the system "
-         "was the straightforward part. Working out what it had actually "
-         "demonstrated, and being willing to write down the answer when it was "
-         "less than hoped, was the part that took judgement.")
+         "That pattern is the thing worth keeping. Building the system was the "
+         "easy part. Working out what it had really shown, and being willing "
+         "to write down the answer when it was less than I hoped, was the part "
+         "that needed judgement.")
 
     para(document,
-         "The prototype does not yet deserve to be trusted with anyone's dinner. "
-         "It is, however, a system that can be checked, argued with and built "
-         "on, and the exact experiment that would settle its central question is "
-         "specified. That seems a more useful place to stop than a confident "
-         "number nobody can verify.")
+         "The prototype does not yet deserve to be trusted with anyone's "
+         "dinner. It is, however, a system that can be checked, argued with "
+         "and built on, and the exact experiment that would settle its main "
+         "question is specified. That seems a more useful place to stop than a "
+         "confident number nobody can verify.")
 
     page_break(document)
 

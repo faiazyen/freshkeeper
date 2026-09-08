@@ -8,8 +8,8 @@ fresh vs rotten from a photograph. It is trained on real labelled images.
 ``build_fusion_model`` is the late-fusion network described in the thesis. It
 takes the CNN's 1280-dimensional embedding alongside five numeric sensor
 features, pushes the sensor features through a small MLP, concatenates the two
-embeddings and classifies into three states. Late fusion -- joining the
-branches after each has formed its own representation -- is used rather than
+embeddings and classifies into three states. Late fusion, joining the
+branches after each has formed its own representation, is used rather than
 early fusion because the two modalities have wildly different dimensionality
 and scale, and concatenating raw pixels with five floats lets the pixels
 dominate the gradient.
@@ -101,7 +101,7 @@ def build_fusion_model(
     On ``image_projection``. Concatenating a 1280-wide visual embedding with a
     32-wide sensor embedding gives the image branch forty times the width, and
     the first fusion layer allocates its capacity accordingly. In this task the
-    visual features are the *weaker* signal -- appearance lags physiology --
+    visual features are the *weaker* signal, appearance lags physiology --
     so the raw concatenation trained to a lower accuracy than the sensor
     branch achieved on its own. Projecting the image embedding down to a
     comparable width lets both modalities actually compete. The thesis reports

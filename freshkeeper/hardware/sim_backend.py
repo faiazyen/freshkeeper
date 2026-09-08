@@ -98,8 +98,8 @@ class FridgeThermalModel:
         """Generate temperature and humidity series over ``hours``.
 
         Door-opening warmth decays exponentially, so instead of summing every
-        past opening at every step -- which is quadratic and made generating a
-        60-day pomegranate trajectory take minutes -- the accumulated excess is
+        past opening at every step, which is quadratic and made generating a
+        60-day pomegranate trajectory take minutes, the accumulated excess is
         carried forward with one multiply per step.
         """
         steps = max(1, int(round(hours / interval_hours)))
@@ -202,7 +202,7 @@ class SimulatedSensorBackend(SensorBackend):
         for slot in range(slot_count):
             self.place_item(slot, self._random_commodity())
 
-    # -- item management ---------------------------------------------------
+    # item management ---------------------------------------------------
 
     def _random_commodity(self) -> str:
         from .spoilage_model import FOOD_PROFILES
@@ -220,7 +220,7 @@ class SimulatedSensorBackend(SensorBackend):
         self.items[slot_id] = item
         return item
 
-    # -- SensorBackend -----------------------------------------------------
+    # SensorBackend -----------------------------------------------------
 
     def warm_up(self) -> None:
         """No physical heater, but advance simulated time by one step.

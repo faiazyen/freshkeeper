@@ -147,7 +147,7 @@ class RaspberryPiSensorBackend(SensorBackend):
         self._camera.start()
         time.sleep(2.0)  # auto-exposure needs a moment to settle
 
-    # -- low-level reads ---------------------------------------------------
+    # low-level reads ---------------------------------------------------
 
     def _read_adc(self, channel: int) -> int:
         """One 10-bit conversion from the MCP3008.
@@ -172,7 +172,7 @@ class RaspberryPiSensorBackend(SensorBackend):
         The converter reads the divided-down voltage, so it is scaled back up
         by ``divider_ratio`` before the formula is applied. An earlier version
         skipped that step and would have reported every resistance too high by
-        the divider ratio -- undetectable without hardware, which is exactly why
+        the divider ratio, undetectable without hardware, which is exactly why
         it is spelled out.
         """
         ratio = (getattr(self, "gas_divider_ratio", GAS_DIVIDER_RATIO)
@@ -235,8 +235,8 @@ class RaspberryPiSensorBackend(SensorBackend):
     def _read_dht22(self) -> tuple[float, float]:
         """Temperature in degC and relative humidity in percent.
 
-        The DHT22 fails a read fairly often -- its single-wire timing is tight
-        and Linux is not a real-time OS -- so a few retries are normal and not
+        The DHT22 fails a read fairly often, its single-wire timing is tight
+        and Linux is not a real-time OS, so a few retries are normal and not
         a sign of a broken sensor.
         """
         last_error: Exception | None = None
@@ -251,7 +251,7 @@ class RaspberryPiSensorBackend(SensorBackend):
             time.sleep(2.0)
         raise IOError(f"DHT22 gave no valid reading in 5 attempts: {last_error}")
 
-    # -- SensorBackend -----------------------------------------------------
+    # SensorBackend -----------------------------------------------------
 
     def _heaters(self, on: bool) -> None:
         self._gpio.output(PIN_HEATER_GATE, bool(on))

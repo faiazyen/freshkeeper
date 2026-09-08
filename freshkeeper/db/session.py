@@ -18,7 +18,7 @@ def make_engine(db_path: str | Path = DEFAULT_DB_PATH, echo: bool = False):
 
     WAL lets the acquisition thread write while a request reads, which the
     default rollback journal does not. ``foreign_keys`` is off by default in
-    SQLite, so the cascades declared in the schema are inert without it -- an
+    SQLite, so the cascades declared in the schema are inert without it, an
     easy thing to not notice until orphaned rows pile up.
     """
     if str(db_path) == ":memory:":

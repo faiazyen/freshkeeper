@@ -77,8 +77,8 @@ def estimate_days_remaining(history: list[SpoilagePrediction],
     A straight line is fitted through the recent score history by least
     squares and extended forward. A line is a poor description of a spoilage
     curve over its whole span, but over the last day or two of samples it is
-    a decent local approximation, and the alternative -- fitting a sigmoid to
-    six noisy points -- is worse.
+    a decent local approximation, and the alternative, fitting a sigmoid to
+    six noisy points, is worse.
 
     Returns None when there are too few points or the item is not declining,
     because "no estimate" is more honest than a number invented from noise.

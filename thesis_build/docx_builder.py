@@ -289,7 +289,6 @@ def table(document, headers: list[str], rows: list[list[str]], label: str,
         run.font.size = Pt(font_size)
         paragraph.paragraph_format.space_after = Pt(2)
         paragraph.paragraph_format.space_before = Pt(2)
-        _shade(cell, "E8EEF4")
 
     for row_values in rows:
         cells = tbl.add_row().cells
@@ -347,11 +346,6 @@ def code_block(document, code: str, label: str | None = None, text: str | None =
         rpr.append(rfonts)
     rfonts.set(qn("w:ascii"), CODE_FONT)
     rfonts.set(qn("w:hAnsi"), CODE_FONT)
-
-    shading = OxmlElement("w:shd")
-    shading.set(qn("w:val"), "clear")
-    shading.set(qn("w:fill"), "F6F8FA")
-    paragraph._p.get_or_add_pPr().append(shading)
 
     if label and text:
         caption(document, next_label("listing", short or _first_sentence(text)), text)

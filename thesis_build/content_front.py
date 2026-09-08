@@ -1,9 +1,9 @@
-"""Front matter: title page, declaration, acknowledgement, abstracts."""
+"""Front matter: title page, declaration, acknowledgement, abstract."""
 
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 
-from docx_builder import add_toc, caption, heading, page_break, para
+from docx_builder import add_toc, page_break, para
 from results import Results
 
 TITLE = "Design of an IoT-Based Food Spoilage Prediction System for Waste Reduction"
@@ -17,10 +17,9 @@ KEYWORDS = ("IoT, food waste reduction, spoilage prediction, sensor fusion, "
             "edge inference, Python, sustainable development")
 
 
-def _centre(document, text: str, size: int, bold: bool = False,
-            space_after: int = 12, caps: bool = False):
+def _centre(document, text, size, bold=False, space_after=12):
     paragraph = document.add_paragraph()
-    run = paragraph.add_run(text.upper() if caps else text)
+    run = paragraph.add_run(text)
     run.bold = bold
     run.font.size = Pt(size)
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -30,9 +29,9 @@ def _centre(document, text: str, size: int, bold: bool = False,
 
 def build(document) -> None:
     R = Results()
-    # -- title page ------------------------------------------------------
-    _centre(document, "Czech University of Life Sciences Prague", 17, bold=True,
-            space_after=6)
+    max_err = max(abs(r["error_percent"]) for r in R.shelf["rows"])
+
+    _centre(document, "Czech University of Life Sciences Prague", 17, bold=True, space_after=6)
     _centre(document, "Faculty of Economics and Management", 14, space_after=4)
     _centre(document, DEPARTMENT, 13, space_after=90)
     _centre(document, "Bachelor Thesis", 20, bold=True, space_after=60)
@@ -42,15 +41,13 @@ def build(document) -> None:
     _centre(document, f"© {YEAR} CZU Prague", 11, space_after=0)
     page_break(document)
 
-    # -- assignment placeholder -----------------------------------------
     _centre(document, "Thesis Assignment", 14, bold=True, space_after=24)
     para(document,
          "Replace this page with the official thesis assignment exported to PDF "
-         "from is.czu.cz, front page and back page, as required by the faculty "
-         "template.", italic=True, justify=False)
+         "from is.czu.cz (front and back page), as the faculty template requires.",
+         italic=True, justify=False)
     page_break(document)
 
-    # -- declaration -----------------------------------------------------
     _centre(document, "Declaration", 14, bold=True, space_after=18)
     para(document,
          f'I declare that I have worked on my bachelor thesis titled "{TITLE}" '
@@ -63,26 +60,23 @@ def build(document) -> None:
          "integrity and ethics.")
     para(document,
          "[DISCLOSURE REQUIRED BY RECTOR'S DIRECTIVE 5/2019, ART. (6). The "
-         "author must state here, truthfully and in their own words, how AI "
-         "tools were used. As of this draft: the software prototype, the "
-         "document generator and the text of every chapter of this draft were "
-         "produced with the assistance of an AI system (Claude, Anthropic) "
-         "working from the author's instructions. Art. (5) makes AI "
-         "inadmissible for formulating the thesis results and for discussing "
-         "and summarising its conclusions; Chapters 2, 5 and 6 and the abstract "
-         "therefore have to be rewritten by the author personally before "
-         "submission, and this notice replaced with the author's own "
-         "statement. See the accompanying audit report.]", italic=True)
+         "author must write here, truthfully and in his own words, how AI tools "
+         "were used. As of this draft: the software prototype, the document "
+         "generator and the text of every chapter were produced with the help "
+         "of an AI system (Claude, Anthropic) working from the author's "
+         "instructions. Art. (5) says AI may not formulate the thesis results "
+         "or discuss and summarise its conclusions. So Chapters 2, 5 and 6 and "
+         "the abstract must be rewritten by the author personally before "
+         "submission, and this notice must be replaced by the author's own "
+         "statement.]", italic=True)
     para(document,
-         "The prototype software described in this thesis was developed with AI "
-         "assistance as an auxiliary tool for the research part, is published "
-         "under the MIT licence, and its development history is recorded in the "
-         "repository. The image corpus used "
-         "for training is a third-party dataset released under CC-BY-4.0 and is "
-         "credited in Chapter 4 and in the references. Machine learning "
-         "frameworks, libraries and the pretrained MobileNetV2 weights are "
-         "third-party components used under their respective open-source "
-         "licences.")
+         "The prototype software in this thesis was developed with AI help as an "
+         "auxiliary tool for the research part. It is published under the MIT "
+         "licence and its development history is in the repository. The image "
+         "dataset used for training is a third party dataset under the CC-BY-4.0 "
+         "licence. It is credited in Chapter 4 and in the references. The machine "
+         "learning frameworks, libraries and the pretrained MobileNetV2 weights "
+         "are third party components used under their open source licences.")
     para(document, "", space_after=36)
     para(document, "In Prague on ______________                "
                    "_________________________", justify=False)
@@ -90,84 +84,75 @@ def build(document) -> None:
                    f"      {AUTHOR}", justify=False)
     page_break(document)
 
-    # -- acknowledgement -------------------------------------------------
     _centre(document, "Acknowledgement", 14, bold=True, space_after=18)
     para(document,
-         f"I would like to thank {SUPERVISOR} for supervising this thesis and, in "
-         "particular, for the review that prompted its substantial revision. The "
-         "criticism that the earlier draft described a system without "
-         "demonstrating that one existed was correct, and acting on it changed "
-         "the work for the better: what had been a design document became a "
-         "prototype that runs, with results that can be reproduced and, where "
-         "they disappoint, reported as such.")
+         f"I would like to thank {SUPERVISOR} for supervising this thesis, and "
+         "especially for the review that led to this large revision. He said "
+         "that the earlier draft described a system but did not show that the "
+         "system existed. He was right. Acting on that comment changed the work "
+         "a lot. A design document became a prototype that runs, with results "
+         "that can be repeated and that are reported honestly, also when they "
+         "are weaker than I hoped.")
     para(document,
          "I also thank the Department of Information Engineering for the "
-         "teaching that made the practical part possible, and the maintainers of "
-         "the open-source projects this work is built on.")
+         "teaching that made the practical part possible, and the people who "
+         "maintain the open source projects this work is built on.")
     page_break(document)
 
-    # -- abstract --------------------------------------------------------
     _centre(document, TITLE, 13, bold=True, space_after=18)
     _centre(document, "Abstract", 12, bold=True, space_after=10)
     para(document,
-         "Households in developed countries discard a large share of the food "
-         "they buy, and a recurring reason is uncertainty: people cannot tell "
-         "whether an item is still good, so they throw it away to be safe. "
-         "Printed dates do not help much, because they describe an item stored "
-         "under ideal conditions rather than the item actually sitting in a "
-         "particular refrigerator. This thesis designs, builds and evaluates a "
-         "prototype that measures the conditions instead of assuming them.")
+         "Households in rich countries throw away a large part of the food they "
+         "buy. One common reason is that people are not sure if an item is still "
+         "good, so they throw it away to be safe. Printed dates do not help "
+         "much. A date describes an item stored under ideal conditions, not the "
+         "item in a particular fridge. This thesis designs, builds and tests a "
+         "prototype that measures the real storage conditions instead of "
+         "guessing them.")
     para(document,
-         "The system combines a camera, two metal-oxide gas sensors, a load cell "
-         "and a temperature and humidity sensor on a Raspberry Pi 4, classifies "
-         "each monitored item as fresh, marginal or spoiled, and presents the "
-         "result through a web interface served from the device. All inference "
-         "runs locally; no image leaves the home network. The software is "
-         f"complete and tested: {R.n(R.loc)} lines of Python across a physical "
-         "spoilage model, a hardware abstraction layer with both real and "
-         "simulated backends, a machine learning pipeline, a REST API, a "
-         f"database and a single-page interface, covered by {R.tests} automated "
-         "tests.")
+         "The system combines a camera, two gas sensors, a load cell and a "
+         "temperature and humidity sensor on a Raspberry Pi 4. It classifies "
+         "each monitored item as fresh, marginal or spoiled and shows the result "
+         "in a web interface served from the device. All processing happens on "
+         "the device. No image leaves the home network. The software is complete "
+         f"and tested. It is {R.n(R.loc)} lines of Python and covers a physical "
+         "spoilage model, a hardware layer with a real and a simulated backend, "
+         "a machine learning pipeline, a REST API, a database and a web "
+         f"interface. It has {R.tests} automated tests.")
     para(document,
          "Three results are reported. A MobileNetV2 classifier trained on "
          f"{R.n(R.audit['corpus_size'])} real photographs reaches "
-         f"{R.pct(R.visual['accuracy'])} accuracy distinguishing fresh from "
-         "rotten produce on a held-out split, after an audit found and removed "
-         "near-duplicate leakage that had inflated an earlier figure. A physical "
-         "spoilage model built from the Ratkowsky and Gompertz equations "
-         "reproduces published refrigerated shelf lives for eight commodities to "
-         f"within {max(abs(r['error_percent']) for r in R.shelf['rows']):.1f}%. "
-         "On the three-state task, a sensor-only classifier reaches "
-         f"{R.pct(R.acc('sensor_only'))} accuracy and the late-fusion model "
-         f"{R.pct(R.acc('fusion'))}, so fusion did not beat its own baseline. "
-         "That negative result is analysed rather than "
-         "hidden: because the simulated sensor features and the ground-truth "
-         "labels derive from the same physical model, the sensor branch has "
-         "privileged access to the target, and validating fusion honestly needs "
-         "instrumented hardware.")
+         f"{R.pct(R.visual['accuracy'])} accuracy at telling fresh from rotten "
+         "produce on a held out split. This came after an audit found and "
+         "removed near duplicate leakage that had inflated an earlier number. A "
+         "physical spoilage model built from the Ratkowsky and Gompertz "
+         "equations reproduces published fridge shelf lives for eight fruits to "
+         f"within {max_err:.1f}%. On the three state task, a sensor only "
+         f"classifier reaches {R.pct(R.acc('sensor_only'))} and the fusion model "
+         f"{R.pct(R.acc('fusion'))}. So fusion did not beat its own baseline. "
+         "This negative result is explained, not hidden. The simulated sensor "
+         "values and the true labels come from the same physical model, so the "
+         "sensor branch has an unfair advantage. A fair test of fusion needs "
+         "real hardware.")
     para(document,
-         "The boundary between what was measured and what was simulated is "
-         "stated wherever a result depends on it. The images and their labels "
-         "are real; the gas, temperature, humidity and mass readings are "
-         "generated by the physical model; the Raspberry Pi drivers are written "
-         "but not validated against instruments.")
+         "The line between what was measured and what was simulated is stated "
+         "everywhere a result depends on it. The images and their labels are "
+         "real. The gas, temperature, humidity and mass readings are generated "
+         "by the physical model. The Raspberry Pi drivers are written but not "
+         "tested on hardware.")
     para(document, "", space_after=6)
-    keyword_paragraph = document.add_paragraph()
-    label = keyword_paragraph.add_run("Keywords: ")
-    label.bold = True
-    keyword_paragraph.add_run(KEYWORDS)
-    keyword_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    kp = document.add_paragraph()
+    label = kp.add_run("Keywords: "); label.bold = True
+    kp.add_run(KEYWORDS)
+    kp.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     page_break(document)
 
-    # -- contents --------------------------------------------------------
-    contents_heading = document.add_paragraph()
-    contents_run = contents_heading.add_run("Table of Contents")
-    contents_run.bold = True
-    contents_run.font.size = Pt(16)
-    contents_heading.paragraph_format.space_after = Pt(14)
+    ch = document.add_paragraph()
+    run = ch.add_run("Table of Contents"); run.bold = True; run.font.size = Pt(16)
+    ch.paragraph_format.space_after = Pt(14)
     add_toc(document)
     para(document,
-         "To build this list in Word: click anywhere in it, press F9, and choose "
-         "to update the entire table. In LibreOffice: Tools, then Update, then "
-         "Indexes and Tables.", italic=True, space_after=4)
+         "To build this list in Word: click in it, press F9, and choose to "
+         "update the whole table. In LibreOffice: Tools, Update, Indexes and "
+         "Tables.", italic=True, space_after=4)
     page_break(document)
