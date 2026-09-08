@@ -1,0 +1,50 @@
+[
+  {
+    "commodity": "apple",
+    "n": 219,
+    "accuracy": 0.9634703196347032,
+    "auc": 0.9991659716430359
+  },
+  {
+    "commodity": "banana",
+    "n": 221,
+    "accuracy": 1.0,
+    "auc": 1.0
+  },
+  {
+    "commodity": "grape",
+    "n": 230,
+    "accuracy": 0.9695652173913043,
+    "auc": 0.9983344689227042
+  },
+  {
+    "commodity": "guava",
+    "n": 238,
+    "accuracy": 1.0,
+    "auc": 1.0
+  },
+  {
+    "commodity": "jujube",
+    "n": 234,
+    "accuracy": 0.9914529914529915,
+    "auc": 0.9997077732320281
+  },
+  {
+    "commodity": "orange",
+    "n": 238,
+    "accuracy": 0.9285714285714286,
+    "auc": 0.9829108113833769
+  },
+  {
+    "commodity": "pomegranate",
+    "n": 238,
+    "accuracy": 0.9957983193277311,
+    "auc": 0.9998587670362263
+  },
+  {
+    "commodity": "strawberry",
+    "n": 219,
+    "accuracy": 0.9908675799086758,
+    "auc": 0.9998331943286072
+  }
+]
