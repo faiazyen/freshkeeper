@@ -69,13 +69,15 @@ def build(document) -> None:
 
     rich_para(document, [
         ("RQ4, on inference cost. ", "b"),
-        (f"Yes, as an estimate. Measured cost is {R.stage('total'):.2f} ms per "
-         "item on the development computer, of which the MobileNetV2 backbone "
-         f"is {R.pct(R.pipe['stages_ms']['backbone']['share_of_total'], 0)}. "
+        (f"Most likely yes, but I do not claim it as proven. Measured cost is "
+         f"{R.stage('total'):.2f} ms per item on the development computer, of "
+         "which the MobileNetV2 backbone is "
+         f"{R.pct(R.pipe['stages_ms']['backbone']['share_of_total'], 0)}. "
          f"Scaled by the Geekbench 6 single core ratio of {R.pi_factor:.1f}, a "
          f"Raspberry Pi 4 would need about {R.pi_ms:.0f} ms per item, so six "
-         f"slots use about {R.pct(R.duty, 1)} of a thirty minute cycle. The "
-         "estimate has not been confirmed on hardware.", ""),
+         f"slots use about {R.pct(R.duty, 1)} of a thirty minute cycle. That "
+         "leaves a large margin, but the figure is an estimate and should be "
+         "confirmed on a real Pi before it is stated as fact.", ""),
     ])
 
     heading(document, "Contributions", 2)
@@ -230,11 +232,13 @@ def build(document) -> None:
          "that needed judgement.")
 
     para(document,
-         "The prototype is not yet good enough to be trusted with anyone's "
-         "dinner. But it is a system that can be checked, argued with "
-         "and built on, and the exact experiment that would settle its main "
-         "question is specified. That seems a more useful place to stop than a "
-         "confident number nobody can verify.")
+         "The prototype is not ready for real use. The sensors were simulated "
+         "and nothing was tested on hardware, so it should not be trusted with "
+         "real food yet. But it shows the idea can work, and it gives a clear "
+         "plan for building and testing the real thing. Everything in it can "
+         "be checked and repeated, and the experiment that would prove or "
+         "disprove the real system is written down. That is a more useful "
+         "place to stop than a confident number nobody can verify.")
 
     page_break(document)
 
