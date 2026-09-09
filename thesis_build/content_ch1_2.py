@@ -36,6 +36,18 @@ def build(document) -> None:
          "uncertainty. Nobody wants food poisoning, and when people are in "
          "doubt the food goes in the bin.")
 
+    para(document,
+         "My interest in this problem is personal. For a while I shared a flat, "
+         "and we spent around two thousand crowns a week on groceries. At the "
+         "end of most weeks we threw a lot of it away: butter, tomatoes, fruit, "
+         "sometimes a whole cake. Food ordered from a restaurant and left "
+         "overnight would smell by the next day, and cooked rice went bad "
+         "within a day. When I later worked in a restaurant I saw the same "
+         "thing on a larger scale, with a lot of good food thrown out at the "
+         "end of every night. Most of this was not carelessness. People forgot "
+         "what they already had, bought more, and did not know how long it "
+         "would last. That is the gap this thesis tries to close.")
+
     heading(document, "The problem with printed dates", 2)
 
     para(document,

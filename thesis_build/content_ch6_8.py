@@ -178,6 +178,31 @@ def build(document) -> None:
            "the consumption event logging already implemented, is the only way "
            "to know whether any of this saves food.")
 
+    heading(document, "A longer term vision", 3)
+
+    para(document,
+         "The steps above are the technical next steps. Beyond them, my longer "
+         "term aim is to turn the prototype into a product that people actually "
+         "use. In that version the user would see the contents of their fridge "
+         "and the expected shelf life of each item in a phone app, get a "
+         "reminder before something is about to spoil, and get simple recipe "
+         "suggestions for the items that need to be used soon.")
+
+    para(document,
+         "A single household is only part of the problem. The same information "
+         "could connect households, restaurants and shops to food banks and "
+         "recycling services, so that food close to its expiry is passed to "
+         "someone who can use it instead of going in the bin. Food that is no "
+         "longer fit to eat could still go to animal feed, or to compost and "
+         "bio fertiliser for farming. A restaurant that cannot sell cooked "
+         "food the next day could offer it at a large discount through the same "
+         "app rather than throw it away.")
+
+    para(document,
+         "These ideas are beyond the scope of this thesis, which tests only the "
+         "core prediction system in simulation. They are the direction I would "
+         "take the work if it were funded and built for real.")
+
     heading(document, "Closing remarks", 2)
 
     para(document,

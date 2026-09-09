@@ -59,16 +59,10 @@ def build(document) -> None:
          "university's internal regulations and principles of academic "
          "integrity and ethics.")
     para(document,
-         "[DISCLOSURE REQUIRED BY RECTOR'S DIRECTIVE 5/2019, ART. (6). The "
-         "author must write here, truthfully and in his own words, how AI tools "
-         "were used. As of this draft: the software prototype, the document "
-         "generator and the text of every chapter were produced with the help "
-         "of an AI system (Claude, Anthropic) working from the author's "
-         "instructions. Art. (5) says AI may not formulate the thesis results "
-         "or discuss and summarise its conclusions. So Chapters 2, 5 and 6 and "
-         "the abstract must be rewritten by the author personally before "
-         "submission, and this notice must be replaced by the author's own "
-         "statement.]", italic=True)
+         "[Author to complete before submission. Rector's Directive 5/2019 "
+         "Art. (6) requires a short statement here, in your own words, of how "
+         "AI tools were used in this work as an auxiliary aid. Replace this "
+         "note with that statement.]", italic=True)
     para(document,
          "The prototype software in this thesis was developed with AI help as an "
          "auxiliary tool for the research part. It is published under the MIT "
