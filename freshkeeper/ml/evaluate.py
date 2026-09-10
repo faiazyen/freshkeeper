@@ -40,14 +40,14 @@ MODEL_DIR = ROOT / "models"
 RESULTS = ROOT / "results"
 FIGURES = ROOT / "docs" / "figures"
 
-PALETTE = {"fresh": "#059669", "marginal": "#d97706", "spoiled": "#e11d48"}
+PALETTE = {"fresh": "0.7", "marginal": "0.45", "spoiled": "0.2"}
 
 
 def plot_confusion(cm: np.ndarray, labels: list[str], title: str, path: Path) -> None:
     """Confusion matrix with both counts and row-normalised percentages."""
     normalised = cm.astype(float) / np.maximum(cm.sum(axis=1, keepdims=True), 1)
     fig, ax = plt.subplots(figsize=(1.55 * len(labels) + 1.6, 1.45 * len(labels) + 1.4))
-    im = ax.imshow(normalised, cmap="Blues", vmin=0, vmax=1)
+    im = ax.imshow(normalised, cmap="Greys", vmin=0, vmax=1)
 
     ax.set_xticks(range(len(labels)), [l.capitalize() for l in labels])
     ax.set_yticks(range(len(labels)), [l.capitalize() for l in labels])
@@ -162,9 +162,12 @@ def main() -> int:
         titles = ["Accuracy", "Macro F1", "Recall (spoiled)"]
         width = 0.26
         xs = np.arange(len(present))
+        _bar_grey = ["0.8", "0.55", "0.3"]
+        _bar_hatch = ["", "//", ".."]
         for k, (metric, title) in enumerate(zip(metrics, titles)):
             values = [out[n][metric] for n in present]
-            bars = ax.bar(xs + (k - 1) * width, values, width, label=title)
+            bars = ax.bar(xs + (k - 1) * width, values, width, label=title,
+                          color=_bar_grey[k], hatch=_bar_hatch[k], edgecolor="black")
             ax.bar_label(bars, fmt="%.3f", fontsize=7, padding=2)
         ax.set_xticks(xs, [n.replace("_", "\n") for n in present])
         ax.set_ylim(0, 1.10)
@@ -181,12 +184,15 @@ def main() -> int:
     if hist_path.exists():
         history = json.loads(hist_path.read_text())
         fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.8))
+        _line_styles = {"vision_only": "-", "sensor_only": "--",
+                        "fusion_raw": ":", "fusion": "-."}
         for name in present:
             h = history.get(name, {}).get("history", {})
             if not h:
                 continue
-            axes[0].plot(h["val_accuracy"], label=name)
-            axes[1].plot(h["val_loss"], label=name)
+            ls = _line_styles.get(name, "-")
+            axes[0].plot(h["val_accuracy"], label=name, color="black", linestyle=ls)
+            axes[1].plot(h["val_loss"], label=name, color="black", linestyle=ls)
         axes[0].set_title("Validation accuracy"); axes[0].set_xlabel("Epoch")
         axes[1].set_title("Validation loss"); axes[1].set_xlabel("Epoch")
         for ax in axes:

@@ -21,3 +21,6 @@ models/tflite/
 models/*.npy
 
 .DS_Store
+
+# Thesis document tooling lives outside this repo; not part of the prototype.
+thesis_build/

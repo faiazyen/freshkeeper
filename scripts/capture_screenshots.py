@@ -25,7 +25,7 @@ FIGURES = ROOT / "docs" / "figures"
 def _crop(path, height):
     """Trim a full-page screenshot to a clean top slice, so the figure
     shows less and reads more simply."""
-    im = Image.open(path)
+    im = Image.open(path).convert("L")  # grayscale, for black-and-white print
     im.crop((0, 0, im.width, min(height, im.height))).save(path)
 BASE_URL = "http://127.0.0.1:5055"
 TOKEN = "devtoken"
@@ -67,6 +67,7 @@ def main() -> int:
         page.click("nav button:has-text('Stats')")
         page.wait_for_timeout(900)
         page.screenshot(path=FIGURES / "ui_stats.png", full_page=True)
+        Image.open(FIGURES / "ui_stats.png").convert("L").save(FIGURES / "ui_stats.png")
         print("  ui_stats.png")
         page.close()
 
@@ -79,6 +80,7 @@ def main() -> int:
         mobile.wait_for_selector("article", timeout=15000)
         mobile.wait_for_timeout(1200)
         mobile.screenshot(path=FIGURES / "ui_mobile.png", full_page=True)
+        Image.open(FIGURES / "ui_mobile.png").convert("L").save(FIGURES / "ui_mobile.png")
         print("  ui_mobile.png")
         mobile.close()
 

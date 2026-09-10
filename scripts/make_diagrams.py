@@ -329,8 +329,8 @@ def shelf_life_validation() -> None:
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.4, 4.3))
 
     xs = np.arange(len(names))
-    ax1.bar(xs - 0.19, published, 0.38, label="Published", color="#94a3b8")
-    ax1.bar(xs + 0.19, modelled, 0.38, label="Model", color="#059669")
+    ax1.bar(xs - 0.19, published, 0.38, label="Published", color="0.75", edgecolor="black")
+    ax1.bar(xs + 0.19, modelled, 0.38, label="Model", color="0.25", edgecolor="black")
     ax1.set_xticks(xs, names, rotation=30, ha="right")
     ax1.set_ylabel("Days to spoilage at 4 °C, 85% RH")
     ax1.set_title("Calibration against published shelf lives")
@@ -340,8 +340,8 @@ def shelf_life_validation() -> None:
                  ha="center", fontsize=6.6, color=MUTED)
 
     temperatures = np.arange(0, 16.5, 0.5)
-    for commodity, colour in (("strawberry", "#e11d48"), ("banana", "#d97706"),
-                              ("apple", "#059669"), ("pomegranate", "#7c3aed")):
+    for commodity, _ls in (("strawberry", "-"), ("banana", "--"),
+                           ("apple", ":"), ("pomegranate", "-.")):
         profile = profile_for(commodity)
         days = []
         for temp in temperatures:
@@ -352,7 +352,7 @@ def shelf_life_validation() -> None:
                         if s.spoilage_extent >= SPOILED_THRESHOLD), np.nan)
             days.append(hit)
         ax2.plot(temperatures, days, label=commodity.capitalize(),
-                 color=colour, lw=1.8)
+                 color="black", linestyle=_ls, lw=1.3)
 
     ax2.axvline(4.0, color=MUTED, ls="--", lw=1.0)
     ax2.text(4.25, ax2.get_ylim()[1] * 0.92, "fridge setpoint",
@@ -415,7 +415,8 @@ def sensor_trajectories() -> None:
             store["mass"].append(100.0 * sample.mass_g / item.initial_mass_g)
             store["temp"].append(sample.temperature_c)
 
-    colours = {0: "#e11d48", 1: "#d97706", 2: "#059669"}
+    colours = {0: "black", 1: "black", 2: "black"}
+    _traj_styles = ["-", "--", ":"]
     labels = {0: "Strawberry", 1: "Banana", 2: "Apple"}
     fig, axes = plt.subplots(2, 2, figsize=(11.4, 6.4))
 
@@ -426,13 +427,13 @@ def sensor_trajectories() -> None:
     ]
     for ax, key, ylabel, title in panels:
         for slot in range(3):
-            ax.plot(days, series[slot][key], color=colours[slot],
-                    lw=1.5, label=labels[slot])
+            ax.plot(days, series[slot][key], color="black",
+                    linestyle=_traj_styles[slot], lw=1.2, label=labels[slot])
         ax.set_xlabel("Days in storage"); ax.set_ylabel(ylabel)
         ax.set_title(title, fontsize=10); ax.grid(alpha=0.25); ax.legend(fontsize=8)
 
     ax = axes[1][1]
-    ax.plot(days, series[0]["temp"], color="#0ea5e9", lw=0.9)
+    ax.plot(days, series[0]["temp"], color="black", lw=0.8)
     ax.axhline(4.0, color=MUTED, ls="--", lw=1.0)
     ax.set_xlabel("Days in storage"); ax.set_ylabel("Cabinet temperature (°C)")
     ax.set_title("Compressor cycling and door openings", fontsize=10)

@@ -17,7 +17,7 @@ This matters more than anything else in this README, so it goes first.
 |---|---|
 | Image corpus and fresh/rotten labels | **Real.** 12,335 photographs, CC-BY-4.0 |
 | Visual CNN training and evaluation | **Real.** Measured on a held-out, leakage-controlled split |
-| Software stack: API, database, alerts, interface | **Real.** Runs, tested, 128 tests |
+| Software stack: API, database, alerts, interface | **Real.** Runs, tested, 130 tests |
 | Physical spoilage model | **Real model, calibrated** against published shelf lives |
 | Gas / temperature / humidity / mass readings | **Simulated** from that model |
 | Raspberry Pi driver code | **Written, not validated** against instruments (heater gating, ADC divider and camera switch are implemented and unit-tested, never run on a Pi) |

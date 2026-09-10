@@ -43,21 +43,21 @@ def main():
     arrow(ax, 5.0, 5.7, 5.0, 5.0)
 
     # 4. Three results
-    box(ax, 1.0, 3.9, 2.4, 1.0, "Fresh", fill="#dff0d8", fs=12, bold=True)
-    box(ax, 3.8, 3.9, 2.4, 1.0, "Use soon", fill="#fcf3cf", fs=12, bold=True)
-    box(ax, 6.6, 3.9, 2.4, 1.0, "Spoiled", fill="#f5d5d0", fs=12, bold=True)
+    box(ax, 1.0, 3.9, 2.4, 1.0, "Fresh", fill="#ffffff", fs=12, bold=True)
+    box(ax, 3.8, 3.9, 2.4, 1.0, "Use soon", fill="#e8e8e8", fs=12, bold=True)
+    box(ax, 6.6, 3.9, 2.4, 1.0, "Spoiled", fill="#bfbfbf", fs=12, bold=True)
     arrow(ax, 5.0, 5.0, 2.2, 4.9)
     arrow(ax, 5.0, 5.0, 5.0, 4.9)
     arrow(ax, 5.0, 5.0, 7.8, 4.9)
 
     # 5. Phone app + alert (green for ok path, red for alert path)
-    arrow(ax, 2.2, 3.9, 3.8, 3.1, colour="green")
+    arrow(ax, 2.2, 3.9, 3.8, 3.1)
     arrow(ax, 5.0, 3.9, 5.0, 3.1)
-    arrow(ax, 7.8, 3.9, 6.2, 3.1, colour="red")
-    box(ax, 2.6, 2.1, 4.8, 1.0, "Phone app\nshows the status and warns you", fs=12, bold=True)
+    arrow(ax, 7.8, 3.9, 6.2, 3.1)
+    box(ax, 2.6, 2.1, 4.8, 1.0, "Web app\nshows the status and warns you", fs=12, bold=True)
 
     ax.text(5.0, 1.4, "The camera and sensors watch the food. The Raspberry Pi decides if it is\n"
-                      "fresh, use soon, or spoiled. The phone app shows this and warns you in time.",
+                      "fresh, use soon, or spoiled. The web app shows this and warns you in time.",
             ha="center", va="top", fontsize=10, color="black")
 
     fig.savefig(FIG / "architecture_simple.png", dpi=200, bbox_inches="tight")
