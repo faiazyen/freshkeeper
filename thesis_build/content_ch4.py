@@ -43,12 +43,11 @@ def build(document) -> None:
          "carries data between parts on the same board, not to a remote "
          "server, because all processing is local.")
 
-    figure(document, f"{FIG}/architecture.png", "Figure 1",
-           "System architecture. Sensors feed an acquisition scheduler running "
-           "on a thirty minute cycle. A frozen MobileNetV2 backbone turns each "
-           "image into an embedding, which the fusion head classifies together "
-           "with five sensor features. Results reach the user through a REST "
-           "API and a web interface served from the device.", width_cm=15.5)
+    figure(document, f"{FIG}/architecture_simple.png", "Figure 1",
+           "How the system works. The camera and sensors watch the food. "
+           "The Raspberry Pi runs the model and decides if each item is "
+           "fresh, use soon, or spoiled. The phone app shows this and "
+           "warns the user in time.", width_cm=13.0)
 
     para(document,
          "The perception layer is a camera, two gas sensors, a temperature and "
