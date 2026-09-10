@@ -34,6 +34,17 @@ def build(document) -> None:
          "and Appendix B gives the repository layout. The complete source is "
          "public at https://github.com/faiazyen/freshkeeper.")
 
+    para(document,
+         "One thing must be clear from the start. I did not build the "
+         "hardware. I wrote the software, and I designed the hardware on "
+         "paper. All the sensor numbers in this thesis, the temperature, "
+         "the gas readings, the humidity and the weight, come from a "
+         "computer model, not from real sensors. I did this because I do "
+         "not have the hardware. The simulation lets me test the software "
+         "and the prediction idea, like a flight simulator tests flying "
+         "without a real plane. Where a number is measured on real data, "
+         "such as the photographs, I say so.")
+
     # ==================================================================
     heading(document, "System architecture", 2)
 
@@ -118,31 +129,13 @@ def build(document) -> None:
            "switched by a MOSFET, not driven from a GPIO pin.", width_cm=15.5)
 
     para(document,
-         "Three details in this design are not obvious. I record them because "
-         "they are the kind of thing that costs an afternoon.")
-
-    para(document,
-         "The LED strip is switched through a 2N7000 N-channel MOSFET, not "
-         "driven from a GPIO pin. A Raspberry Pi pin can safely give about 16 "
-         "mA, and a 50 cm strip wants much more than that. If you drive it "
-         "directly, the pin gets damaged.")
-
-    para(document,
-         "The MQ sensors need a 5 V heater supply, but the MCP3008 input must "
-         "stay below 3.3 V. So the sensor output is divided by 0.66 before it "
-         "reaches the converter, and the driver scales the reading back up "
-         "before applying the resistance formula. An earlier version of the "
-         "driver missed that step and would have reported every resistance too "
-         "high by the divider ratio. No test could catch that without "
-         "hardware, which is why it is recorded here.")
-
-    para(document,
-         "The heater supply for both gas sensors is switched through a logic "
-         "level MOSFET on GPIO 17, so the heaters use power only during the "
-         "measurement window. The driver switches them on at the start of a "
-         "cycle, waits 30 seconds for the elements to settle, reads every slot, "
-         "and switches them off again. This happens in a finally block, so a "
-         "sensor fault in the middle of a cycle cannot leave them on.")
+         "A few wiring choices matter. The LED strip and the two gas "
+         "heaters are each switched through a small transistor instead "
+         "of straight from a pin, so the pins are not overloaded. The "
+         "gas sensors run at 5 V, but the converter input must stay "
+         "under 3.3 V, so their output is divided down first. These are "
+         "design choices only. The board was not built, so none of this "
+         "was tested on real parts.")
 
     heading(document, "Enclosure", 3)
 
@@ -218,41 +211,11 @@ def build(document) -> None:
          "the code mistakes it for a tested part.")
 
     para(document,
-         "The HX711 has no standard bus and must be bit banged, which is the "
-         "least obvious part of the driver:")
-
-    code_block(document,
-               '''def _read_hx711(self, samples: int = 10) -> float:
-    """Read the load cell and return grams."""
-    GPIO = self._gpio
-    readings = []
-    for _ in range(samples):
-        timeout = time.time() + 1.0
-        while GPIO.input(PIN_HX711_DOUT) == 1:       # wait for data-ready
-            if time.time() > timeout:
-                raise TimeoutError("HX711 did not signal data ready within 1 s")
-            time.sleep(0.001)
-
-        value = 0
-        for _ in range(24):                          # 24 clock pulses, MSB first
-            GPIO.output(PIN_HX711_SCK, True)
-            value = (value << 1) | GPIO.input(PIN_HX711_DOUT)
-            GPIO.output(PIN_HX711_SCK, False)
-        GPIO.output(PIN_HX711_SCK, True)             # 25th pulse: channel A, gain 128
-        GPIO.output(PIN_HX711_SCK, False)
-
-        if value & 0x800000:                         # sign-extend two's complement
-            value -= 0x1000000
-        readings.append(value)
-
-    # Median, not mean: one mains-borne spike drags a mean by tens of grams.
-    readings.sort()
-    median = readings[len(readings) // 2]
-    return round((median - self.load_cell_offset) / self.load_cell_scale, 1)''',
-               "Listing 1",
-               "Bit banged HX711 read. The 25th clock pulse selects channel A at "
-               "gain 128 for the next conversion. Leaving it out silently "
-               "switches the amplifier to a different channel.")
+         "The driver reads each sensor and turns the raw signal into a "
+         "number the software can use. The load cell, for example, has "
+         "no standard connection and must be read bit by bit. This code "
+         "is written and is in the repository, but it was never run on a "
+         "real board, so it is a design, not a tested part.")
 
     # ==================================================================
     heading(document, "The physical spoilage model", 2)
@@ -423,7 +386,8 @@ def build(document) -> None:
 
     figure(document, f"{FIG}/sensor_trajectories.png", "Figure 3",
            "Simulated sensor response over 30 days for three commodities in "
-           "one fridge. Volatile production follows microbial growth, mass "
+           "one fridge. These curves are computed by the physical model, not "
+           "measured from real sensors. Volatile production follows microbial growth, mass "
            "falls with transpiration, and the temperature panel shows compressor "
            "cycling with door opening spikes. Strawberry, banana and apple "
            "separate in the order their published shelf lives predict.",

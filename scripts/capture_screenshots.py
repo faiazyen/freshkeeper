@@ -15,10 +15,18 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from PIL import Image
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 FIGURES = ROOT / "docs" / "figures"
+
+
+def _crop(path, height):
+    """Trim a full-page screenshot to a clean top slice, so the figure
+    shows less and reads more simply."""
+    im = Image.open(path)
+    im.crop((0, 0, im.width, min(height, im.height))).save(path)
 BASE_URL = "http://127.0.0.1:5055"
 TOKEN = "devtoken"
 
@@ -42,6 +50,7 @@ def main() -> int:
         page.wait_for_selector("article", timeout=15000)
         page.wait_for_timeout(1200)
         page.screenshot(path=FIGURES / "ui_dashboard.png", full_page=True)
+        _crop(FIGURES / "ui_dashboard.png", 645)  # header, alert, first two cards
         print("  ui_dashboard.png")
 
         # item detail with the freshness chart ------------------------
@@ -49,6 +58,7 @@ def main() -> int:
         page.wait_for_selector("canvas", timeout=15000)
         page.wait_for_timeout(1500)  # let Chart.js finish its entry animation
         page.screenshot(path=FIGURES / "ui_item_detail.png", full_page=True)
+        _crop(FIGURES / "ui_item_detail.png", 1480)  # card and chart only
         print("  ui_item_detail.png")
 
         # statistics --------------------------------------------------
