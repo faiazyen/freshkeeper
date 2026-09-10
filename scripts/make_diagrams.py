@@ -25,20 +25,20 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 FIGURES = ROOT / "docs" / "figures"
 
-INK = "#1e293b"
-MUTED = "#64748b"
-LAYER_COLOURS = {"perception": "#0ea5e9", "network": "#8b5cf6", "application": "#059669"}
+INK = "#000000"
+MUTED = "#444444"
+LAYER_COLOURS = {"perception": "#000000", "network": "#000000", "application": "#000000"}
 
 
-def box(ax, x, y, w, h, text, face="#ffffff", edge=INK, fontsize=8.5, weight="normal"):
+def box(ax, x, y, w, h, text, face="#f3f3f3", edge=INK, fontsize=8.5, weight="normal"):
     ax.add_patch(FancyBboxPatch(
-        (x, y), w, h, boxstyle="round,pad=0.012,rounding_size=0.02",
-        facecolor=face, edgecolor=edge, linewidth=1.1))
+        (x, y), w, h, boxstyle="square,pad=0.012",
+        facecolor=face, edgecolor=edge, linewidth=1.0))
     ax.text(x + w / 2, y + h / 2, text, ha="center", va="center",
             fontsize=fontsize, color=INK, weight=weight, linespacing=1.45)
 
 
-def arrow(ax, start, end, style="-|>", colour=INK, lw=1.1, ls="-"):
+def arrow(ax, start, end, style="-|>", colour=INK, lw=1.0, ls="-"):
     ax.add_patch(FancyArrowPatch(
         start, end, arrowstyle=style, mutation_scale=11,
         color=colour, linewidth=lw, linestyle=ls,
@@ -68,7 +68,7 @@ def architecture() -> None:
     # the first row of boxes.
     for name, y, h, colour in bands:
         ax.add_patch(FancyBboxPatch(
-            (0.10, y), 0.88, h, boxstyle="round,pad=0.008,rounding_size=0.015",
+            (0.10, y), 0.88, h, boxstyle="square,pad=0.008",
             facecolor=colour, alpha=0.06, edgecolor=colour, linewidth=1.2))
         ax.text(0.065, y + h / 2, name, fontsize=9.5, weight="bold",
                 color=colour, rotation=90, ha="center", va="center")
@@ -82,39 +82,39 @@ def architecture() -> None:
     ]
     for label, x in sensors:
         width = 0.22 if "HX711" in label else (0.17 if "Camera" in label else 0.14)
-        box(ax, x, 0.775, width, 0.10, label, face="#f0f9ff",
+        box(ax, x, 0.775, width, 0.10, label, face="#f3f3f3",
             edge=LAYER_COLOURS["perception"], fontsize=7.6)
 
     box(ax, 0.13, 0.615, 0.28, 0.085,
-        "MCP3008 10-bit ADC\nSPI0, channels 0-1", face="#faf5ff",
+        "MCP3008 10-bit ADC\nSPI0, channels 0-1", face="#f3f3f3",
         edge=LAYER_COLOURS["network"], fontsize=7.8)
     box(ax, 0.435, 0.615, 0.25, 0.085,
-        "Acquisition scheduler\n30-minute cycle", face="#faf5ff",
+        "Acquisition scheduler\n30-minute cycle", face="#f3f3f3",
         edge=LAYER_COLOURS["network"], fontsize=7.8)
     box(ax, 0.705, 0.615, 0.25, 0.085,
-        "Sensor backend\nhardware | simulation", face="#faf5ff",
+        "Sensor backend\nhardware | simulation", face="#f3f3f3",
         edge=LAYER_COLOURS["network"], fontsize=7.8)
 
     box(ax, 0.13, 0.475, 0.37, 0.095,
         "MobileNetV2 backbone (frozen)\n1280-d visual embedding",
-        face="#faf5ff", edge=LAYER_COLOURS["network"], fontsize=7.8)
+        face="#f3f3f3", edge=LAYER_COLOURS["network"], fontsize=7.8)
     box(ax, 0.53, 0.475, 0.42, 0.095,
         "Fusion head: 1280 -> 64 projection || 5 -> 64 -> 32 MLP\n"
         "-> 256 -> 128 -> softmax(fresh, marginal, spoiled)",
-        face="#faf5ff", edge=LAYER_COLOURS["network"], fontsize=7.4)
+        face="#f3f3f3", edge=LAYER_COLOURS["network"], fontsize=7.4)
 
     box(ax, 0.13, 0.245, 0.25, 0.085,
         "SQLite\nitems, readings,\npredictions, outcomes",
-        face="#ecfdf5", edge=LAYER_COLOURS["application"], fontsize=7.5)
+        face="#f3f3f3", edge=LAYER_COLOURS["application"], fontsize=7.5)
     box(ax, 0.41, 0.245, 0.25, 0.085,
         "Flask REST API\nbearer-token auth",
-        face="#ecfdf5", edge=LAYER_COLOURS["application"], fontsize=7.8)
+        face="#f3f3f3", edge=LAYER_COLOURS["application"], fontsize=7.8)
     box(ax, 0.69, 0.245, 0.26, 0.085,
         "Alert engine\ntransition-triggered",
-        face="#ecfdf5", edge=LAYER_COLOURS["application"], fontsize=7.8)
+        face="#f3f3f3", edge=LAYER_COLOURS["application"], fontsize=7.8)
     box(ax, 0.33, 0.095, 0.42, 0.085,
         "Vue 3 single-page interface\nserved over the local network",
-        face="#ecfdf5", edge=LAYER_COLOURS["application"], fontsize=8.2)
+        face="#f3f3f3", edge=LAYER_COLOURS["application"], fontsize=8.2)
 
     arrow(ax, (0.215, 0.775), (0.215, 0.700), colour=MUTED)   # camera -> ADC
     arrow(ax, (0.385, 0.775), (0.28, 0.700), colour=MUTED)     # MQ-135 -> ADC
@@ -148,7 +148,7 @@ def wiring() -> None:
 
     fig, ax = blank_axes((9.8, 6.4))
     box(ax, 0.36, 0.30, 0.28, 0.42, "Raspberry Pi 4\nModel B (4 GB)\n\n40-pin GPIO header",
-        face="#fef2f2", edge="#b91c1c", fontsize=9, weight="bold")
+        face="#f3f3f3", edge="#b91c1c", fontsize=9, weight="bold")
 
     peripherals = [
         ("DHT22 (AM2302)\ntemperature / humidity", 0.04, 0.60, 0.24, 0.11,
@@ -165,7 +165,7 @@ def wiring() -> None:
          f"GPIO {rpi.PIN_HEATER_GATE}\ngate drive", "left"),
     ]
     for label, x, y, w, h, pins, side in peripherals:
-        box(ax, x, y, w, h, label, face="#f8fafc", fontsize=7.8)
+        box(ax, x, y, w, h, label, face="#f3f3f3", fontsize=7.8)
         if side == "right":
             arrow(ax, (x + w, y + h / 2), (0.36, y + h / 2), style="<|-|>", colour=MUTED)
             ax.text((x + w + 0.36) / 2, y + h / 2 + 0.035, pins,
@@ -176,8 +176,8 @@ def wiring() -> None:
                     ha="center", fontsize=6.4, color=MUTED)
 
     # Gas sensors hang off the ADC, not the Pi: the Pi has no analogue input.
-    box(ax, 0.04, 0.03, 0.115, 0.10, "MQ-135\nammonia\n5 V heater", face="#fffbeb", fontsize=7)
-    box(ax, 0.165, 0.03, 0.115, 0.10, "MQ-3\nethanol\n5 V heater", face="#fffbeb", fontsize=7)
+    box(ax, 0.04, 0.03, 0.115, 0.10, "MQ-135\nammonia\n5 V heater", face="#f3f3f3", fontsize=7)
+    box(ax, 0.165, 0.03, 0.115, 0.10, "MQ-3\nethanol\n5 V heater", face="#f3f3f3", fontsize=7)
     arrow(ax, (0.10, 0.13), (0.12, 0.22), colour=MUTED)
     arrow(ax, (0.22, 0.13), (0.18, 0.22), colour=MUTED)
     ax.text(0.29, 0.10,
@@ -225,12 +225,12 @@ def er_diagram() -> None:
             lines.append(f"{marker} {column.name}: {type_name}")
         height = 0.045 + 0.0255 * len(lines)
         ax.add_patch(FancyBboxPatch(
-            (x, y), 0.27, height, boxstyle="round,pad=0.006,rounding_size=0.01",
+            (x, y), 0.27, height, boxstyle="square,pad=0.006",
             facecolor="#ffffff", edgecolor=INK, linewidth=1.2))
         ax.add_patch(FancyBboxPatch(
             (x, y + height - 0.042), 0.27, 0.042,
-            boxstyle="round,pad=0.004,rounding_size=0.008",
-            facecolor="#e0f2fe", edgecolor=INK, linewidth=1.0))
+            boxstyle="square,pad=0.004",
+            facecolor="#e2e2e2", edgecolor=INK, linewidth=1.0))
         ax.text(x + 0.135, y + height - 0.021, name, ha="center", va="center",
                 fontsize=8.6, weight="bold", color=INK)
         for i, line in enumerate(lines):
@@ -242,7 +242,7 @@ def er_diagram() -> None:
     arrow(ax, (0.63, 0.66), (0.79, 0.20 + 0.20), style="-|>", colour=MUTED)
     ax.text(0.70, 0.47, "1 : 1\noutcome", fontsize=7, color=MUTED)
     arrow(ax, (0.36, 0.68), (0.20, 0.20 + 0.27), style="-|>", colour=MUTED, ls="--")
-    ax.text(0.16, 0.50, "by slot_id\n(not a foreign key)", fontsize=7, color=MUTED)
+    ax.text(0.05, 0.545, "by slot_id\n(not a foreign key)", fontsize=7, color=MUTED)
 
     ax.text(0.5, 0.985, "Database schema", ha="center", fontsize=12,
             weight="bold", color=INK)
@@ -288,7 +288,7 @@ def sequence() -> None:
             x = xs[src]
             ax.add_patch(FancyBboxPatch(
                 (x - 0.012, y - 0.016), 0.024, 0.032,
-                boxstyle="round,pad=0.002", facecolor="#e0f2fe",
+                boxstyle="square,pad=0.002", facecolor="#e2e2e2",
                 edgecolor=MUTED, linewidth=0.9))
             ax.text(x + 0.026, y, label, fontsize=7, color=INK, va="center")
         else:
@@ -453,20 +453,20 @@ def sensor_trajectories() -> None:
 def model_diagram() -> None:
     fig, ax = blank_axes((10.2, 5.2))
 
-    box(ax, 0.02, 0.62, 0.17, 0.14, "Image\n224 x 224 x 3", face="#e0f2fe", fontsize=8)
+    box(ax, 0.02, 0.62, 0.17, 0.14, "Image\n224 x 224 x 3", face="#e2e2e2", fontsize=8)
     box(ax, 0.22, 0.62, 0.20, 0.14,
-        "MobileNetV2\nfrozen, ImageNet\n2.26 M params", face="#f0f9ff", fontsize=7.6)
-    box(ax, 0.45, 0.62, 0.14, 0.14, "Embedding\n1280-d", face="#f0f9ff", fontsize=8)
-    box(ax, 0.62, 0.62, 0.15, 0.14, "Dense 64\n+ dropout", face="#f0f9ff", fontsize=8)
+        "MobileNetV2\nfrozen, ImageNet\n2.26 M params", face="#f3f3f3", fontsize=7.6)
+    box(ax, 0.45, 0.62, 0.14, 0.14, "Embedding\n1280-d", face="#f3f3f3", fontsize=8)
+    box(ax, 0.62, 0.62, 0.15, 0.14, "Dense 64\n+ dropout", face="#f3f3f3", fontsize=8)
 
     box(ax, 0.02, 0.20, 0.17, 0.14,
         "Sensor features\nethanol, ammonia,\ntemp, RH, Δmass", face="#fef3c7", fontsize=7.4)
     box(ax, 0.22, 0.20, 0.20, 0.14,
-        "Dense 64 + BN\n+ dropout", face="#fffbeb", fontsize=8)
-    box(ax, 0.45, 0.20, 0.14, 0.14, "Dense 32", face="#fffbeb", fontsize=8)
+        "Dense 64 + BN\n+ dropout", face="#f3f3f3", fontsize=8)
+    box(ax, 0.45, 0.20, 0.14, 0.14, "Dense 32", face="#f3f3f3", fontsize=8)
 
     box(ax, 0.80, 0.41, 0.16, 0.16,
-        "Concatenate\n64 + 32 = 96", face="#f5f3ff", fontsize=8)
+        "Concatenate\n64 + 32 = 96", face="#f3f3f3", fontsize=8)
     for start, end in (((0.19, 0.69), (0.22, 0.69)), ((0.42, 0.69), (0.45, 0.69)),
                        ((0.59, 0.69), (0.62, 0.69)), ((0.19, 0.27), (0.22, 0.27)),
                        ((0.42, 0.27), (0.45, 0.27)), ((0.77, 0.69), (0.86, 0.57)),
