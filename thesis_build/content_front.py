@@ -101,9 +101,11 @@ def build(document) -> None:
          "buy. One common reason is that people are not sure if an item is still "
          "good, so they throw it away to be safe. Printed dates do not help "
          "much. A date describes an item stored under ideal conditions, not the "
-         "item in a particular fridge. This thesis designs, builds and tests a "
-         "prototype that measures the real storage conditions instead of "
-         "guessing them.")
+         "item in a particular fridge. This thesis designs and builds a software "
+         "prototype and tests it in simulation. The prototype is meant to "
+         "measure the real storage conditions instead of guessing them, "
+         "but in this work the sensor side is simulated, not physically "
+         "built.")
     para(document,
          "The system combines a camera, two gas sensors, a load cell and a "
          "temperature and humidity sensor on a Raspberry Pi 4. It classifies "

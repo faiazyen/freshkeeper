@@ -102,7 +102,7 @@ def build(document) -> None:
     heading(document, "What this thesis does", 2)
 
     para(document,
-         "This thesis designs and builds a prototype that watches items on a "
+         "This thesis designs and builds a software prototype that watches items on a "
          "fridge shelf. It predicts how far each one has moved towards "
          "spoilage. It tells the user in time to eat the food instead of "
          "throwing it away. The system is called FreshKeeper. It runs completely on the "
