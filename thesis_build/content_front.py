@@ -83,8 +83,7 @@ def build(document) -> None:
     para(document,
          f"I would like to thank {SUPERVISOR} for supervising this thesis, and "
          "especially for the review that led to this large revision. He said "
-         "that the earlier draft described a system but did not show that the "
-         "system existed. He was right. Acting on that comment changed the work "
+         "that the earlier draft described a system but did not show that the system existed, and he was right. Acting on that comment changed the work "
          "a lot. A design document became a prototype that runs, with results "
          "that can be repeated and that are reported honestly, also when they "
          "are weaker than I hoped.")
@@ -127,7 +126,7 @@ def build(document) -> None:
          f"within {max_err:.1f}%. On the three state task, a sensor only "
          f"classifier reaches {R.pct(R.acc('sensor_only'))} and the fusion model "
          f"{R.pct(R.acc('fusion'))}. So fusion did not beat its own baseline. "
-         "This negative result is explained, not hidden. The simulated sensor "
+         "I explain this negative result openly instead of hiding it. The simulated sensor "
          "values and the true labels come from the same physical model, so the "
          "sensor branch has an unfair advantage. A fair test of fusion needs "
          "real hardware.")

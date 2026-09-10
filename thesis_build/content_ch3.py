@@ -39,7 +39,7 @@ def build(document) -> None:
 
     para(document,
          "The behaviour research is more useful for design than the tonnage "
-         "numbers, because it shows where a tool could help. Quested et al. "
+         "numbers, because it shows where a tool could help. As Quested et al. "
          "(2013) argue that food waste is not one behaviour but the leftover of "
          "many loosely connected ones: planning, shopping, storing, cooking and "
          "judging. Their point is that a tool aimed at one step often "
@@ -57,15 +57,13 @@ def build(document) -> None:
          "Date labels deserve special attention, because they are the tool most "
          "people rely on and they are widely misunderstood. Wansink and Wright "
          "(2006) showed confusion between date types, with consumers treating "
-         "quality dates as safety deadlines and throwing away good food. The "
-         "label is not lying. It answers a different question from the one "
+         "quality dates as safety deadlines and throwing away good food, although the label is not lying. It answers a different question from the one "
          "people ask. A best before date describes a producer's assumption "
          "about storage, plus a safety margin. It cannot describe the item in "
          "front of you, because it was printed before that item was stored.")
 
     para(document,
-         "This gap between assumed and real storage history is the space this "
-         "thesis works in. The space is narrow. The system addresses "
+         "This gap between assumed and real storage history is the narrow space this thesis works in. The system addresses "
          "uncertainty at the moment of judging, which is one of several causes, "
          "and the literature suggests it is not the biggest one.")
 
@@ -237,7 +235,7 @@ def build(document) -> None:
          "of repeating it.")
 
     para(document,
-         "The difficulty is practical, not physical. A load cell measures what "
+         "The difficulty here is a practical one about everyday use. A load cell measures what "
          "is on it, so taking an item out to use half of it looks like a big "
          "sudden mass loss that has nothing to do with spoilage. Telling "
          "consumption from drying needs either user input or a rule about "
@@ -363,8 +361,7 @@ def build(document) -> None:
     para(document,
          "ImageNet accuracy was not a deciding factor. Chapter 5 shows the "
          "visual task here is easy enough that the backbone choice is unlikely "
-         "to matter. The interesting variation is in the data, not the "
-         "network.")
+         "to matter. The interesting variation comes from the data itself, more than from the network.")
 
     heading(document, "Compression and edge deployment", 3)
 
@@ -405,8 +402,7 @@ def build(document) -> None:
 
     para(document,
          "The prototypes reviewed in this chapter report accuracies without "
-         "describing any such check. This is not proof their numbers are "
-         "wrong. It does mean that neither they nor a reader can tell.")
+         "describing any such check. This does not prove their numbers are wrong. It does mean that neither they nor a reader can tell.")
 
     heading(document, "Datasets and what they contain", 3)
 
@@ -545,7 +541,7 @@ def build(document) -> None:
 
     reset_numbering()
     numbered(document,
-             "Reproducibility. Most prototypes are described, not released. "
+             "Reproducibility. Most prototypes are only described in a paper and never released. "
              "Part lists are incomplete, pin assignments are missing, and source "
              "code is rarely published, so the results cannot be checked or "
              "built on. This work publishes the full implementation, a pin "
@@ -570,7 +566,7 @@ def build(document) -> None:
     numbered(document,
              "Long term real world evaluation. No reviewed study measures real "
              "waste reduction in households over a meaningful period, and this "
-             "one does not either. The gap stays open. Closing it needs real "
+             "one does not either, so the gap stays open. Closing it needs real "
              "hardware and a long trial.")
 
     para(document,

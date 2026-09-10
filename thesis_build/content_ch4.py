@@ -63,8 +63,7 @@ def build(document) -> None:
          "One drives real hardware. The other generates readings from the "
          "physical model. This is what lets the whole system (the API, the "
          "alert logic, the inference service, the test suite) run on a laptop "
-         "with nothing plugged in. Moving to real hardware then changes one "
-         "line of configuration, not the code.")
+         "with nothing plugged in. Moving to real hardware then changes one line of configuration and leaves the code untouched.")
 
     # ==================================================================
     heading(document, "Hardware design", 2)
@@ -101,7 +100,7 @@ def build(document) -> None:
          "Two choices need a reason. The Raspberry Pi 4 was chosen over the "
          "cheaper Pi Zero 2 W because the visual backbone dominates inference "
          "cost. Chapter 5 shows that even on the Pi 4 the backbone is 92% of "
-         "the per item time. The MCP3008 is required, not optional. The "
+         "the per item time. The MCP3008 is a required part. The "
          "Raspberry Pi has no analogue input at all, and the MQ sensors are "
          "analogue, so without an external converter there is no gas channel.")
 
@@ -664,7 +663,7 @@ if pre["accuracy"] < 0.90:
          "because each was made against a reasonable alternative.")
 
     para(document,
-         "Dependencies are injected, not imported. The inference service "
+         "The code passes dependencies in instead of importing them directly. The inference service "
          "receives a sensor backend and a session factory. The Flask app "
          "receives a database path and an optional inference service. The "
          "alternative, modules importing their collaborators directly, is "
@@ -674,7 +673,7 @@ if pre["accuracy"] < 0.90:
          "because nothing has to be real.")
 
     para(document,
-         "Failure modes are chosen on purpose, not inherited. A cycle that "
+         "The code sets its failure modes on purpose instead of taking whatever the libraries do by default. A cycle that "
          "raises an error does not kill the scheduler thread, because a sensor "
          "failing once every few days is normal, while a monitoring system "
          "that silently stops monitoring is not. A missing camera falls back "

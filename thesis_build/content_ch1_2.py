@@ -407,7 +407,7 @@ def build(document) -> None:
          "sensitive information. The usual design for such a device, upload "
          "the images and process them in the cloud, creates the risk on "
          "somebody else's server. The design here keeps all processing local, "
-         "so the sensitive data never leaves the home. Chapter 4 explains how. "
+         "so the sensitive data never leaves the home, and Chapter 4 explains how. "
          "This protection is built into the structure. It is not a promise "
          "that someone has to keep.")
 

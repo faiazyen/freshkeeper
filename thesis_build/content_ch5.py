@@ -718,7 +718,7 @@ def build(document) -> None:
          "a few tenths of a point should not be over read. The gap between "
          "sensor only and fusion is larger than typical seed variation for "
          "models of this size. But that claim is not backed by repeated runs. "
-         "It should be treated as an impression, not a result.", ""),
+         "It should be read as an impression only, because repeated runs were not done.", ""),
     ])
 
     heading(document, "Sensitivity to the class boundaries", 3)
@@ -755,5 +755,4 @@ def build(document) -> None:
     para(document,
          "Where this work differs is in what it publishes: the complete "
          "implementation, the dataset audit, the baseline comparison, and the "
-         "results that did not support the design. That is the more useful "
-         "contribution, and it is available for someone else to check.")
+         "results that did not support the design. This is probably the more useful contribution, and anyone can check it.")
